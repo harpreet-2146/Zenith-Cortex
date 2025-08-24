@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
+import Home from "./pages/Home";
 import Resume from "./pages/Resume";
 import Profile from "./pages/Profile";
 import Quiz from "./pages/Quiz";
@@ -9,56 +10,16 @@ import MentorHub from "./pages/MentorHub";
 export default function App() {
   return (
     <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MainLayout>
-              <h2 className="text-2xl">Welcome to Zenith Cortex 🚀</h2>
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/resume"
-          element={
-            <MainLayout>
-              <Resume />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <MainLayout>
-              <Profile />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/quiz"
-          element={
-            <MainLayout>
-              <Quiz />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/leaderboard"
-          element={
-            <MainLayout>
-              <Leaderboard />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/mentorhub"
-          element={
-            <MainLayout>
-              <MentorHub />
-            </MainLayout>
-          }
-        />
-      </Routes>
+      <MainLayout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/resume" element={<Resume />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/mentorhub" element={<MentorHub />} />
+        </Routes>
+      </MainLayout>
     </Router>
   );
 }
