@@ -1,0 +1,16 @@
+[
+  {
+    "id": "u001",
+    "name": "Aarav Malhotra",
+    "dept": "CSE",
+    "year": 2026,
+    "skills": ["React","Node","DSA"],
+    "achievements": [
+      {"type":"hackathon","level":"international","points":40,"ts":"2025-07-01"},
+      {"type":"project","points":20,"ts":"2025-05-10"},
+      {"type":"course","points":5,"ts":"2025-03-20"}
+    ],
+    "atsScore": 76,
+    "endorsements": 2
+  }
+]

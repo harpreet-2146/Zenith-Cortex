@@ -1,0 +1,6 @@
+[
+  {"id":"q1","text":"I enjoy solving logic problems.","domain":"software","weight":2},
+  {"id":"q2","text":"I notice visual details and layouts.","domain":"design","weight":2},
+  {"id":"q3","text":"I like finding patterns in data.","domain":"data","weight":2},
+  {"id":"q4","text":"I enjoy coordinating people and timelines.","domain":"pm","weight":2}
+]
