@@ -1,28 +1,64 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-import Dashboard from "./pages/Dashboard";
+import Resume from "./pages/Resume";
+import Profile from "./pages/Profile";
 import Quiz from "./pages/Quiz";
 import Leaderboard from "./pages/Leaderboard";
 import MentorHub from "./pages/MentorHub";
-import Resume from "./pages/Resume";
-import Profile from "./pages/Profile";
 
-function App() {
+export default function App() {
   return (
     <Router>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/mentor" element={<MentorHub />} />
-          <Route path="/resume" element={<Resume />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </MainLayout>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <h2 className="text-2xl">Welcome to Zenith Cortex 🚀</h2>
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/resume"
+          element={
+            <MainLayout>
+              <Resume />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <MainLayout>
+              <Profile />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <MainLayout>
+              <Quiz />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <MainLayout>
+              <Leaderboard />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/mentorhub"
+          element={
+            <MainLayout>
+              <MentorHub />
+            </MainLayout>
+          }
+        />
+      </Routes>
     </Router>
   );
 }
-
-export default App

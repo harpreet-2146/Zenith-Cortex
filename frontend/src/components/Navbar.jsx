@@ -1,15 +1,17 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
+export default function Navbar() {
   return (
-    <div className="w-full h-14 bg-blue-600 flex items-center px-6 shadow-md text-white">
-      <h1 className="font-bold text-xl">ZenithCortex</h1>
-      <div className="ml-auto flex gap-4">
-        <button className="hover:underline">Notifications</button>
-        <button className="hover:underline">Profile</button>
+    <nav className="bg-gray-900 text-white p-4 flex justify-between">
+      <h1 className="font-bold text-xl">Zenith Cortex</h1>
+      <div className="space-x-4">
+        <Link to="/resume">Resume</Link>
+        <Link to="/profile">Profile</Link>
+        <Link to="/quiz">Quiz</Link>
+        <Link to="/leaderboard">Leaderboard</Link>
+        <Link to="/mentorhub">Mentor Hub</Link>
       </div>
-    </div>
+    </nav>
   );
-};
+}
 
-export default Navbar;
