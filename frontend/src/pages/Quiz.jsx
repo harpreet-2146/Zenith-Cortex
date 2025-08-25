@@ -1,71 +1,125 @@
-import { useState } from "react";
-import qs from "../data/quiz.questions.json";
-import rmaps from "../data/roadmaps.json";
-
-const DOMAIN_TO_CAREERS = {
-  software: ["Software Engineer"],
-  data: ["Data Scientist"],
-  design: ["UX Designer"],
-  pm: ["Product Manager"]
-};
+import React, { useState, useEffect } from "react";
 
 export default function Quiz() {
-  const [answers, setAnswers] = useState({});
-  const [results, setResults] = useState(null);
+  const [step, setStep] = useState(0); // 0 = first 10 questions, 1 = next 10, 2 = result
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const [allAnswers, setAllAnswers] = useState([]);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [experienceLevel, setExperienceLevel] = useState("Intermediate");
 
-  const toggle = (id) => setAnswers(a => ({...a, [id]: !(a[id])}));
+  useEffect(() => {
+    // fetch first 10 questions
+    fetch("http://localhost:5000/api/quiz/start")
+      .then((res) => res.json())
+      .then((data) => setQuestions(data.questions));
+  }, []);
 
-  const submit = () => {
-    // score domains
-    const domainScores = {};
-    qs.forEach(q => {
-      if (answers[q.id]) {
-        domainScores[q.domain] = (domainScores[q.domain] || 0) + q.weight;
-      }
+  const handleAnswer = (id, value) => {
+    setAnswers((prev) => {
+      const updated = [...prev];
+      updated[id - 1] = value;
+      return updated;
     });
-    // map to careers + percent
-    const out = Object.entries(domainScores).flatMap(([dom,score]) =>
-      DOMAIN_TO_CAREERS[dom].map(c => ({ career:c, match: Math.min(score*10, 95)}))
-    ).sort((a,b)=>b.match-a.match).slice(0,10);
-    setResults(out);
   };
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Career Fit Quiz</h1>
+  const handleNext = async () => {
+    if (answers.length !== questions.length) {
+      alert("Please answer all questions first");
+      return;
+    }
 
-      {!results && (
-        <>
-          <div className="space-y-3 mb-4">
-            {qs.map(q=>(
-              <label key={q.id} className="flex items-center gap-3 bg-white p-3 rounded-xl shadow">
-                <input type="checkbox" checked={!!answers[q.id]} onChange={()=>toggle(q.id)} />
-                <span>{q.text}</span>
-              </label>
-            ))}
+    setLoading(true);
+
+    if (step === 0) {
+      // send first 10 answers to backend
+      try {
+        const res = await fetch("http://localhost:5000/api/quiz/next", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answers }),
+        });
+        const data = await res.json();
+        setAllAnswers(answers);
+        setAnswers([]);
+        setQuestions(data.questions);
+        setStep(1);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to generate next questions");
+      } finally {
+        setLoading(false);
+      }
+    } else if (step === 1) {
+      // send all answers to backend for result
+      try {
+        const res = await fetch("http://localhost:5000/api/quiz/result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ allAnswers: [...allAnswers, ...answers], experienceLevel }),
+        });
+        const data = await res.json();
+        setResult(data);
+        setStep(2);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to generate result");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  if (step === 2 && result) {
+    return (
+      <div className="p-6 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-4">Quiz Result</h1>
+        {result.professions?.map((prof, idx) => (
+          <div key={idx} className="mb-4 p-4 border rounded bg-gray-50">
+            <h2 className="font-bold text-lg">{idx + 1}. {prof.name}</h2>
+            <pre className="whitespace-pre-wrap">{prof.roadmap}</pre>
           </div>
-          <button onClick={submit} className="bg-gray-900 text-white px-4 py-2 rounded-xl">Get Results</button>
-        </>
-      )}
+        ))}
+      </div>
+    );
+  }
 
-      {results && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Top Matches</h2>
-          {results.map((r,i)=>(
-            <details key={i} className="bg-white rounded-xl shadow">
-              <summary className="cursor-pointer list-none px-4 py-3 flex justify-between">
-                <span>{r.career}</span><span className="font-semibold">{r.match}%</span>
-              </summary>
-              <div className="px-6 pb-4">
-                <ol className="list-decimal ml-6 space-y-1">
-                  {(rmaps[r.career] || ["Roadmap coming soon"]).map((step,idx)=><li key={idx}>{step}</li>)}
-                </ol>
-              </div>
-            </details>
+  return (
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">Quiz</h1>
+      {questions.map((q, idx) => (
+        <div key={q.id} className="mb-4 p-4 border rounded bg-gray-50">
+          <p className="font-semibold">{q.id}. {q.question}</p>
+          {q.options?.map((opt) => (
+            <label key={opt} className="block mt-1">
+              <input
+                type="radio"
+                name={`q-${q.id}`}
+                value={opt}
+                checked={answers[idx] === opt}
+                onChange={() => handleAnswer(q.id, opt)}
+              /> {opt}
+            </label>
           ))}
         </div>
-      )}
+      ))}
+      <button
+        onClick={handleNext}
+        disabled={loading}
+        className="w-full py-2 bg-blue-600 text-white rounded-lg"
+      >
+        {loading ? "Processing..." : step === 0 ? "Next 10 Questions" : "Get Result"}
+      </button>
+
+      <div className="mt-4">
+        <label className="block mb-2">Experience Level:</label>
+        <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}>
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+        </select>
+      </div>
     </div>
   );
 }
-
