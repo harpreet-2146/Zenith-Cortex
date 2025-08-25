@@ -1,93 +1,87 @@
+// backend/server.js
 const express = require("express");
-const cors = require("cors");
 const multer = require("multer");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
-const mammoth = require("mammoth");
-const fetch = require("node-fetch"); // important!
+const fetch = require("node-fetch"); // for Ollama calls
 
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
-app.use(express.json());
-
-// Multer setup (file uploads)
+// Multer setup (for file uploads)
 const upload = multer({ dest: "uploads/" });
 
-// Helper: extract text from uploaded resume
-async function extractText(file) {
-  const ext = file.originalname.split(".").pop().toLowerCase();
+// -------------------------
+// Call Ollama
+// -------------------------
+async function callOllama(resumeText) {
+  try {
+    const response = await fetch("http://localhost:11434/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gemma:2b",
+        prompt: `
+You are an ATS (Applicant Tracking System) resume analyzer. 
+Analyze the following resume text and provide a structured report with these sections:
 
-  if (ext === "pdf") {
-    const dataBuffer = fs.readFileSync(file.path);
-    const data = await pdfParse(dataBuffer);
-    return data.text;
-  } else if (ext === "docx") {
-    const data = await mammoth.extractRawText({ path: file.path });
-    return data.value;
-  } else if (ext === "txt") {
-    return fs.readFileSync(file.path, "utf-8");
-  } else {
-    throw new Error("Unsupported file format. Please upload PDF, DOCX, or TXT.");
+## ATS Score (0-100)
+
+## Strengths
+
+## Weaknesses
+
+## Suggestions to Improve
+
+Resume Content:
+${resumeText}
+        `,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.response || "No response from Ollama";
+  } catch (err) {
+    console.error("❌ Error in callOllama:", err);
+    throw err;
   }
 }
 
-// Helper: call Ollama API
-async function callOllama(prompt) {
-  const response = await fetch("http://localhost:11434/api/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "gemma:2b",
-      prompt,
-      stream: false, // wait for full response
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Ollama error: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.response;
-}
-
-// API: Analyse Resume
+// -------------------------
+// API Route
+// -------------------------
 app.post("/api/analyse", upload.single("resume"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const resumeText = await extractText(req.file);
+    const dataBuffer = fs.readFileSync(req.file.path);
+    const pdfData = await pdfParse(dataBuffer);
+    const resumeText = pdfData.text;
 
-    const prompt = `
-Analyse this resume for ATS compatibility, strengths, and weaknesses.
-Provide output in sections:
+    console.log("✅ Resume parsed, sending to Ollama...");
 
-1. **ATS Score (0-100)**
-2. **Strengths**
-3. **Weaknesses**
-4. **Suggestions to Improve**
-
-Resume:
-${resumeText}
-    `;
-
-    const analysis = await callOllama(prompt);
+    const result = await callOllama(resumeText);
 
     // cleanup uploaded file
     fs.unlinkSync(req.file.path);
 
-    res.json({ result: analysis });
-  } catch (error) {
-  console.error(error);
-  res.status(500).json({ error: "Error analysing resume. Check backend logs." });
-}
-
+    res.json({ result });
+  } catch (err) {
+    console.error("❌ Error analysing resume:", err);
+    res.status(500).json({ error: "Error analysing resume. Check backend logs." });
+  }
 });
 
+// -------------------------
+// Start Server
+// -------------------------
 app.listen(PORT, () => {
-  console.log(`✅ Backend running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
