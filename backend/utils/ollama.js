@@ -1,4 +1,3 @@
-// backend/utils/ollama.js
 const axios = require("axios");
 
 async function callOllama(prompt) {
@@ -8,8 +7,8 @@ async function callOllama(prompt) {
     stream: false
   });
 
-  return response.data.response; // or response.data.choices[0].text depending on Ollama version
+  // Adjust depending on Ollama version
+  return response.data.response || response.data.choices?.[0]?.text;
 }
 
 module.exports = { callOllama };
-
