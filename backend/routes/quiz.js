@@ -1,73 +1,66 @@
+// backend/routes/quiz.js
 const express = require("express");
 const router = express.Router();
 const { callOllama } = require("../utils/ollama");
 
-/**
- * Robust JSON extractor: handles code fences, stray text, arrays/objects.
- */
+/* Helper: attempt to extract JSON from messy text (handles code fences / extra text) */
 function extractJson(text) {
   if (!text || typeof text !== "string") return null;
-
-  // strip code fences if present
-  const fenced = text.replace(/```(?:json)?/gi, "```");
-  if (fenced.includes("```")) {
-    const parts = fenced.split("```").filter(Boolean);
-    // try blocks that look like JSON
+  // remove common code fences markers
+  let cleaned = text.replace(/```(?:json|js|txt)?/gi, "```");
+  if (cleaned.includes("```")) {
+    const parts = cleaned.split("```").filter(Boolean);
     for (const p of parts) {
-      const m = p.match(/^[\s\S]*?({[\s\S]*}|\[[\s\S]*\])[\s\S]*?$/);
+      const m = p.match(/({[\s\S]*}|\[[\s\S]*\])/);
       if (m) {
-        try { return JSON.parse(m[1]); } catch {}
+        try { return JSON.parse(m[0]); } catch {}
       }
     }
   }
-
-  // try to grab the first {...} or [...]
-  const mObj = text.match(/{[\s\S]*}/);
-  if (mObj) {
-    try { return JSON.parse(mObj[0]); } catch {}
+  // fallback: try to find first {...} or [...]
+  const objMatch = text.match(/{[\s\S]*}/);
+  if (objMatch) {
+    try { return JSON.parse(objMatch[0]); } catch {}
   }
-  const mArr = text.match(/\[[\s\S]*\]/);
-  if (mArr) {
-    try { return JSON.parse(mArr[0]); } catch {}
+  const arrMatch = text.match(/\[[\s\S]*\]/);
+  if (arrMatch) {
+    try { return JSON.parse(arrMatch[0]); } catch {}
   }
   return null;
 }
 
+/* Normalize topProfessions: ensure objects, take top 5, and scale percentages to sum ≈100 */
 function normalizeTopProfessions(list) {
-  // Accepts:
-  // - [{ profession, matchPercentage, reasons? }, ...]
-  // - ["Software Engineer", ...]
   if (!Array.isArray(list)) return [];
-
-  // Ensure objects with profession + matchPercentage
-  let items = list.map((x) => {
-    if (typeof x === "string") return { profession: x, matchPercentage: 0, reasons: [] };
-    if (x && typeof x === "object") {
+  // convert to object form
+  let items = list.map(entry => {
+    if (typeof entry === "string") return { profession: entry, matchPercentage: 0, reasons: [] };
+    if (entry && typeof entry === "object") {
       return {
-        profession: String(x.profession || x.title || x.name || "").trim(),
-        matchPercentage: Number(x.matchPercentage ?? x.percentage ?? x.score ?? 0),
-        reasons: Array.isArray(x.reasons) ? x.reasons : []
+        profession: String(entry.profession || entry.title || entry.name || "").trim(),
+        matchPercentage: Number(entry.matchPercentage ?? entry.percentage ?? entry.score ?? 0),
+        reasons: Array.isArray(entry.reasons) ? entry.reasons : []
       };
     }
     return null;
-  }).filter(Boolean).filter(x => x.profession);
+  }).filter(Boolean).filter(it => it.profession);
 
-  // Top 5 only
   items = items.slice(0, 5);
+  if (!items.length) return [];
 
-  // If all zeros, spread evenly
-  const sum = items.reduce((s, it) => s + (isFinite(it.matchPercentage) ? it.matchPercentage : 0), 0);
-  if (sum <= 0) {
-    const even = Math.floor(100 / Math.max(items.length, 1));
-    items.forEach((it) => it.matchPercentage = even);
-    if (items.length) items[0].matchPercentage += 100 - (even * items.length);
+  const sumRaw = items.reduce((s, it) => s + (isFinite(it.matchPercentage) ? it.matchPercentage : 0), 0);
+
+  if (sumRaw <= 0) {
+    // even split if AI didn't provide numbers
+    const even = Math.floor(100 / items.length);
+    items.forEach((it, i) => it.matchPercentage = even);
+    items[0].matchPercentage += 100 - even * items.length;
     return items;
   }
 
-  // Normalize to sum ~100
-  let scaled = items.map((it) => ({ ...it, matchPercentage: (it.matchPercentage / sum) * 100 }));
-  // round & fix remainder
-  let rounded = scaled.map((it) => ({ ...it, matchPercentage: Math.round(it.matchPercentage) }));
+  // scale to total 100
+  let scaled = items.map(it => ({ ...it, matchPercentage: (it.matchPercentage / sumRaw) * 100 }));
+  let rounded = scaled.map(it => ({ ...it, matchPercentage: Math.round(it.matchPercentage) }));
   let total = rounded.reduce((s, it) => s + it.matchPercentage, 0);
   let diff = 100 - total;
   for (let i = 0; diff !== 0 && i < rounded.length; i++) {
@@ -77,105 +70,90 @@ function normalizeTopProfessions(list) {
   return rounded;
 }
 
+/* ensure roadmap structure for each profession */
+function ensureRoadmapStructure(rm) {
+  return {
+    beginner: Array.isArray(rm?.beginner) ? rm.beginner : [],
+    intermediate: Array.isArray(rm?.intermediate) ? rm.intermediate : [],
+    advanced: Array.isArray(rm?.advanced) ? rm.advanced : []
+  };
+}
+
 router.post("/analyze", async (req, res) => {
   try {
     const { answers } = req.body;
-
     if (!answers || !Array.isArray(answers) || answers.length === 0) {
-      return res.status(400).json({ error: "No answers provided (expected array of selected options)." });
+      return res.status(400).json({ error: "No answers provided (expected array)" });
     }
 
-    // 🔒 Strict JSON prompt with schema and examples
     const prompt = `
-You are an expert career advisor AI. You will receive a list of quiz answers (user selections).
-Analyze them and return ONLY strict JSON following this schema. No extra commentary.
+You are Gemma (model gemma:2b) — an expert career advisor and roadmap generator.
+You will receive a JSON array of the user's selected quiz answers. Analyze them carefully and produce ONLY valid JSON (no explanation, no code fences).
 
-SCHEMA (example values included for shape only):
+REQUIRED OUTPUT SCHEMA:
 {
   "topProfessions": [
-    { "profession": "Software Engineer", "matchPercentage": 88, "reasons": ["reason 1", "reason 2"] },
-    { "profession": "Data Scientist", "matchPercentage": 76, "reasons": ["reason 1"] },
-    { "profession": "UX Designer", "matchPercentage": 64, "reasons": [] },
-    { "profession": "Project Manager", "matchPercentage": 52, "reasons": [] },
-    { "profession": "Technical Writer", "matchPercentage": 40, "reasons": [] }
+    { "profession": "Software Engineer", "matchPercentage": 88, "reasons": ["answer1","answer2"] },
+    ...
   ],
   "roadmaps": {
     "Software Engineer": {
-      "beginner": [
-        { "title": "Learn Programming Basics (Python or JS)", "why": "foundation for problem solving" },
-        { "title": "Build 3 CLI mini-apps", "why": "practice control flow, functions, data structures" }
-      ],
-      "intermediate": [
-        { "title": "Web App with Auth + DB", "why": "end-to-end product skills (REST, SQL)" }
-      ],
-      "advanced": [
-        { "title": "Scale and Optimize", "why": "performance, testing, CI/CD, cloud" }
-      ]
+      "beginner": [ { "title": "Learn Python basics", "why": "foundation for problem solving" }, ... ],
+      "intermediate": [ { "title": "Build a full-stack app", "why": "end-to-end experience" }, ... ],
+      "advanced": [ { "title": "Design scalable systems", "why": "prepare for senior roles" }, ... ]
     },
-    "Data Scientist": {
-      "beginner": [{ "title": "Python + Numpy/Pandas", "why": "data wrangling" }],
-      "intermediate": [{ "title": "ML Project (Classification)", "why": "modeling fundamentals" }],
-      "advanced": [{ "title": "Deploy ML (API/Batches)", "why": "productionization" }]
-    }
+    "Data Scientist": { "beginner": [...], "intermediate": [...], "advanced": [...] }
   }
 }
 
-CONSTRAINTS:
-- "topProfessions" must contain 5 items max.
-- "matchPercentage" must be numeric (0–100). Make them proportional to the evidence in answers.
-- Include concise "reasons" tied to the user choices (do not invent unrelated claims).
-- "roadmaps" must include entries for each profession listed in "topProfessions".
-- Each roadmap level should have 2–5 concrete items with crisp, actionable titles and a short "why".
-- Output ONLY valid JSON. Do not wrap in code fences.
+INSTRUCTIONS:
+- Provide exactly 5 top professions (or fewer if strongly justified).
+- matchPercentage must be integer 0–100 and should be realistic based on the user's answers. Make them roughly sum to 100 across the top professions.
+- Each profession entry should include concise "reasons" that clearly tie to the user's answers (don't invent unrelated facts).
+- For each profession in topProfessions, include a corresponding roadmap object in "roadmaps" with beginner/intermediate/advanced arrays (2–5 actionable items per level; items can be strings or objects with title+why).
+- Keep outputs concise. DO NOT output any text outside the JSON object.
 
-User Answers:
+User answers (array):
 ${JSON.stringify(answers, null, 2)}
 `;
 
-    // 🔗 Call local Ollama (gemma:2b) via your shared util
+    // call the shared util, which sends to http://localhost:11434/api/generate with model gemma:2b
     const raw = await callOllama(prompt);
+    console.log("Raw AI response (quiz):", raw && raw.slice ? raw.slice(0, 1000) : raw);
 
-    // Safely parse whatever Gemma returned
-    let parsed = null;
+    // try strict parse then fallback to extractor
+    let parsed;
     try {
       parsed = JSON.parse(raw);
-    } catch {
+    } catch (e) {
       parsed = extractJson(raw);
     }
+
     if (!parsed || typeof parsed !== "object") {
-      console.error("AI raw (unparseable):", raw);
-      return res.status(502).json({ error: "AI returned non-JSON.", raw });
+      console.error("Failed parsing AI JSON:", raw);
+      return res.status(502).json({ error: "AI returned non-JSON or unparsable output", raw });
     }
 
-    // Normalize topProfessions and ensure roadmaps exist per profession
-    const normalizedTop = normalizeTopProfessions(parsed.topProfessions || parsed.professions || parsed.results || []);
-    const roadmaps = parsed.roadmaps && typeof parsed.roadmaps === "object" ? parsed.roadmaps : {};
+    // normalize top professions & roadmaps
+    const topRaw = parsed.topProfessions || parsed.professions || parsed.results || [];
+    const normalizedTop = normalizeTopProfessions(topRaw);
 
-    // Ensure every listed profession has a roadmap object with levels
-    const ensureLevels = (rm) => ({
-      beginner: Array.isArray(rm?.beginner) ? rm.beginner : [],
-      intermediate: Array.isArray(rm?.intermediate) ? rm.intermediate : [],
-      advanced: Array.isArray(rm?.advanced) ? rm.advanced : []
-    });
-
+    const givenRoadmaps = parsed.roadmaps || parsed.roadmap || {};
     const normalizedRoadmaps = {};
-    for (const item of normalizedTop) {
-      const key = item.profession;
-      normalizedRoadmaps[key] = ensureLevels(roadmaps[key]);
+    for (const p of normalizedTop) {
+      normalizedRoadmaps[p.profession] = ensureRoadmapStructure(givenRoadmaps[p.profession] || {});
     }
 
     return res.json({
       topProfessions: normalizedTop,
-      roadmaps: normalizedRoadmaps,
-      // include the raw for debugging in dev if needed:
-      // _debugRaw: raw
+      roadmaps: normalizedRoadmaps
     });
-
   } catch (err) {
     console.error("Error analyzing quiz:", err);
-    return res.status(500).json({ error: "Failed to analyze quiz results" });
+    return res.status(500).json({ error: "Failed to analyze quiz results", details: String(err) });
   }
 });
 
 module.exports = router;
+
 
