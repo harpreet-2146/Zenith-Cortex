@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "studentId": "u123",
+    "name": "Preeti",
+    "year": 2,
+    "title": "Built a Todo App",
+    "category": "Web Dev",
+    "visibility": "public",
+    "date": "2025-08-20"
+  },
+  {
+    "id": 2,
+    "studentId": "u456",
+    "name": "Amit",
+    "year": 3,
+    "title": "Published AI Research Paper",
+    "category": "AI/ML",
+    "visibility": "public",
+    "date": "2025-08-15"
+  }
+]
