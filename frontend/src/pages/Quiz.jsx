@@ -1,125 +1,113 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import quizQuestions from "../data/quiz.questions.json";
 
 export default function Quiz() {
-  const [step, setStep] = useState(0); // 0 = first 10 questions, 1 = next 10, 2 = result
-  const [questions, setQuestions] = useState([]);
+  const questions = quizQuestions || [];
+  const PAGE_SIZE = 4;
+
+  const [pageIndex, setPageIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [allAnswers, setAllAnswers] = useState([]);
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [experienceLevel, setExperienceLevel] = useState("Intermediate");
+  const [showResults, setShowResults] = useState(false);
+  const [aiResult, setAiResult] = useState(null);
 
-  useEffect(() => {
-    // fetch first 10 questions
-    fetch("http://localhost:5000/api/quiz/start")
-      .then((res) => res.json())
-      .then((data) => setQuestions(data.questions));
-  }, []);
+  if (!questions.length) return <p>No quiz questions available.</p>;
 
-  const handleAnswer = (id, value) => {
-    setAnswers((prev) => {
-      const updated = [...prev];
-      updated[id - 1] = value;
-      return updated;
-    });
+  const currentPageQuestions = questions.slice(
+    pageIndex * PAGE_SIZE,
+    (pageIndex + 1) * PAGE_SIZE
+  );
+
+  const handleAnswer = (qIndex, option) => {
+    const globalIndex = pageIndex * PAGE_SIZE + qIndex;
+    const updatedAnswers = [...answers];
+    updatedAnswers[globalIndex] = option;
+    setAnswers(updatedAnswers);
   };
 
-  const handleNext = async () => {
-    if (answers.length !== questions.length) {
-      alert("Please answer all questions first");
-      return;
-    }
-
-    setLoading(true);
-
-    if (step === 0) {
-      // send first 10 answers to backend
-      try {
-        const res = await fetch("http://localhost:5000/api/quiz/next", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers }),
-        });
-        const data = await res.json();
-        setAllAnswers(answers);
-        setAnswers([]);
-        setQuestions(data.questions);
-        setStep(1);
-      } catch (err) {
-        console.error(err);
-        alert("Failed to generate next questions");
-      } finally {
-        setLoading(false);
-      }
-    } else if (step === 1) {
-      // send all answers to backend for result
-      try {
-        const res = await fetch("http://localhost:5000/api/quiz/result", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ allAnswers: [...allAnswers, ...answers], experienceLevel }),
-        });
-        const data = await res.json();
-        setResult(data);
-        setStep(2);
-      } catch (err) {
-        console.error(err);
-        alert("Failed to generate result");
-      } finally {
-        setLoading(false);
-      }
+  const nextPage = () => {
+    if ((pageIndex + 1) * PAGE_SIZE >= questions.length) {
+      setShowResults(true);
+      analyzeResults(answers);
+    } else {
+      setPageIndex(pageIndex + 1);
     }
   };
 
-  if (step === 2 && result) {
+  const analyzeResults = async (answersArray) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/quiz/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: answersArray }),
+      });
+      const data = await res.json();
+      setAiResult(data.result);
+    } catch (err) {
+      console.error("Error analyzing quiz:", err);
+      setAiResult({ error: "Failed to analyze quiz results." });
+    }
+  };
+
+  if (showResults) {
     return (
       <div className="p-6 max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Quiz Result</h1>
-        {result.professions?.map((prof, idx) => (
-          <div key={idx} className="mb-4 p-4 border rounded bg-gray-50">
-            <h2 className="font-bold text-lg">{idx + 1}. {prof.name}</h2>
-            <pre className="whitespace-pre-wrap">{prof.roadmap}</pre>
+        <h1 className="text-2xl font-bold mb-4 text-center">Quiz Results</h1>
+        {aiResult?.error ? (
+          <p className="text-red-500">{aiResult.error}</p>
+        ) : (
+          <div className="space-y-4">
+            <div className="p-4 border rounded bg-green-50">
+              <h2 className="font-bold">Top Professions</h2>
+              <ul className="list-disc ml-6">
+                {aiResult.topProfessions?.map((p, i) => (
+                  <li key={i}>{p}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-4 border rounded bg-blue-50">
+              <h2 className="font-bold">Roadmap</h2>
+              <p>{aiResult.roadmap}</p>
+            </div>
           </div>
-        ))}
+        )}
       </div>
     );
   }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Quiz</h1>
-      {questions.map((q, idx) => (
-        <div key={q.id} className="mb-4 p-4 border rounded bg-gray-50">
-          <p className="font-semibold">{q.id}. {q.question}</p>
-          {q.options?.map((opt) => (
-            <label key={opt} className="block mt-1">
-              <input
-                type="radio"
-                name={`q-${q.id}`}
-                value={opt}
-                checked={answers[idx] === opt}
-                onChange={() => handleAnswer(q.id, opt)}
-              /> {opt}
-            </label>
-          ))}
+      <h1 className="text-2xl font-bold mb-4 text-center">Quiz</h1>
+      {currentPageQuestions.map((q, idx) => (
+        <div key={idx} className="p-4 border rounded bg-gray-50 mb-4">
+          <p className="font-semibold mb-2">
+            Question {pageIndex * PAGE_SIZE + idx + 1} of {questions.length}
+          </p>
+          <p className="mb-2">{q.question}</p>
+          <div className="space-y-2">
+            {q.options.map((opt, i) => (
+              <button
+                key={i}
+                onClick={() => handleAnswer(idx, opt)}
+                className={`w-full py-2 px-4 border rounded hover:bg-blue-100 ${
+                  answers[pageIndex * PAGE_SIZE + idx] === opt
+                    ? "bg-blue-200"
+                    : ""
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
         </div>
       ))}
       <button
-        onClick={handleNext}
-        disabled={loading}
+        onClick={nextPage}
         className="w-full py-2 bg-blue-600 text-white rounded-lg"
       >
-        {loading ? "Processing..." : step === 0 ? "Next 10 Questions" : "Get Result"}
+        {pageIndex * PAGE_SIZE + PAGE_SIZE >= questions.length
+          ? "Finish Quiz"
+          : "Next Page"}
       </button>
-
-      <div className="mt-4">
-        <label className="block mb-2">Experience Level:</label>
-        <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}>
-          <option>Beginner</option>
-          <option>Intermediate</option>
-          <option>Advanced</option>
-        </select>
-      </div>
     </div>
   );
 }
