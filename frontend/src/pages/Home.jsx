@@ -1,10 +1,24 @@
+// src/pages/Home.jsx
+import React, { useEffect, useState } from "react";
+import achievementsData from "../data/achievements.json";
+
 export default function Home() {
+  const [achievements, setAchievements] = useState([]);
+
+  useEffect(() => {
+    setAchievements(achievementsData.filter(a => a.visibility === "public"));
+  }, []);
+
   return (
-    <div className="text-center mt-20">
-      <h1 className="text-3xl font-bold">Welcome to Zenith Cortex 🚀</h1>
-      <p className="mt-4 text-gray-600">
-        Your all-in-one hub for resume building, quizzes, mentorship, and more.
-      </p>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">🎉 Achievements Feed</h1>
+      {achievements.map(a => (
+        <div key={a.id} className="p-4 border rounded-lg mb-3 shadow">
+          <p className="font-semibold">{a.name} (Year {a.year})</p>
+          <p>{a.title}</p>
+          <span className="text-sm text-gray-500">{a.category}</span>
+        </div>
+      ))}
     </div>
   );
 }
