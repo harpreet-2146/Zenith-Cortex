@@ -2,74 +2,116 @@ import React, { useState } from "react";
 import quizQuestions from "../data/quiz.questions.json";
 
 export default function Quiz() {
-  const questions = quizQuestions || [];
+  const questions = Array.isArray(quizQuestions) ? quizQuestions : [];
   const PAGE_SIZE = 4;
 
   const [pageIndex, setPageIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [showResults, setShowResults] = useState(false);
+  const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [submitting, setSubmitting] = useState(false);
   const [aiResult, setAiResult] = useState(null);
+  const [error, setError] = useState(null);
 
-  if (!questions.length) return <p>No quiz questions available.</p>;
+  if (!questions.length) return <p className="p-6">No quiz questions available.</p>;
 
-  const currentPageQuestions = questions.slice(
-    pageIndex * PAGE_SIZE,
-    (pageIndex + 1) * PAGE_SIZE
-  );
+  const currentPageQuestions = questions.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE);
 
-  const handleAnswer = (qIndex, option) => {
-    const globalIndex = pageIndex * PAGE_SIZE + qIndex;
-    const updatedAnswers = [...answers];
-    updatedAnswers[globalIndex] = option;
-    setAnswers(updatedAnswers);
+  const handleAnswer = (localIdx, option) => {
+    const globalIndex = pageIndex * PAGE_SIZE + localIdx;
+    const next = [...answers];
+    next[globalIndex] = option;
+    setAnswers(next);
   };
 
-  const nextPage = () => {
+  const nextPage = async () => {
     if ((pageIndex + 1) * PAGE_SIZE >= questions.length) {
-      setShowResults(true);
-      analyzeResults(answers);
+      await submitQuiz();
     } else {
       setPageIndex(pageIndex + 1);
     }
   };
 
-  const analyzeResults = async (answersArray) => {
+  const submitQuiz = async () => {
+    setSubmitting(true);
+    setError(null);
+    setAiResult(null);
     try {
+      const filtered = answers.filter((a) => a !== null); // send selecteds only
       const res = await fetch("http://localhost:5000/api/quiz/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: answersArray }),
+        body: JSON.stringify({ answers: filtered }),
       });
       const data = await res.json();
-      setAiResult(data.result);
-    } catch (err) {
-      console.error("Error analyzing quiz:", err);
-      setAiResult({ error: "Failed to analyze quiz results." });
+      if (!res.ok) throw new Error(data?.error || "Failed");
+      setAiResult(data);
+    } catch (e) {
+      setError(e.message || "Failed to analyze quiz");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  if (showResults) {
+  if (aiResult) {
     return (
-      <div className="p-6 max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4 text-center">Quiz Results</h1>
-        {aiResult?.error ? (
-          <p className="text-red-500">{aiResult.error}</p>
-        ) : (
-          <div className="space-y-4">
-            <div className="p-4 border rounded bg-green-50">
-              <h2 className="font-bold">Top Professions</h2>
-              <ul className="list-disc ml-6">
-                {aiResult.topProfessions?.map((p, i) => (
-                  <li key={i}>{p}</li>
-                ))}
-              </ul>
+      <div className="p-6 max-w-3xl mx-auto space-y-6">
+        <h1 className="text-2xl font-bold text-center">Your Career Fit</h1>
+
+        {error && <p className="text-red-600">{error}</p>}
+
+        <div className="space-y-3">
+          <h2 className="font-semibold">Top Matches</h2>
+          {aiResult.topProfessions?.map((p, i) => (
+            <div key={i} className="p-3 border rounded">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium">{p.profession}</span>
+                <span>{p.matchPercentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200 h-2 rounded">
+                <div
+                  className="bg-blue-600 h-2 rounded"
+                  style={{ width: `${Math.min(Math.max(p.matchPercentage, 0), 100)}%` }}
+                />
+              </div>
+              {!!p.reasons?.length && (
+                <ul className="list-disc ml-5 mt-2 text-sm">
+                  {p.reasons.map((r, idx) => <li key={idx}>{r}</li>)}
+                </ul>
+              )}
             </div>
-            <div className="p-4 border rounded bg-blue-50">
-              <h2 className="font-bold">Roadmap</h2>
-              <p>{aiResult.roadmap}</p>
-            </div>
-          </div>
-        )}
+          ))}
+        </div>
+
+        <div className="space-y-4">
+          <h2 className="font-semibold">Roadmaps</h2>
+          {aiResult.topProfessions?.map((p, i) => {
+            const rm = aiResult.roadmaps?.[p.profession] || {};
+            const section = (label, items) => (
+              <div className="p-3 bg-gray-50 rounded border">
+                <h3 className="font-medium mb-2">{label}</h3>
+                {Array.isArray(items) && items.length ? (
+                  <ul className="list-disc ml-5 space-y-1">
+                    {items.map((it, j) => (
+                      <li key={j}>
+                        <span className="font-medium">{it.title || String(it)}</span>
+                        {it.why ? <span className="text-gray-600"> — {it.why}</span> : null}
+                      </li>
+                    ))}
+                  </ul>
+                ) : <p className="text-sm text-gray-500">No items provided.</p>}
+              </div>
+            );
+            return (
+              <div key={i} className="p-4 border rounded">
+                <h3 className="font-semibold mb-2">{p.profession}</h3>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {section("Beginner", rm.beginner)}
+                  {section("Intermediate", rm.intermediate)}
+                  {section("Advanced", rm.advanced)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -77,6 +119,7 @@ export default function Quiz() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4 text-center">Quiz</h1>
+
       {currentPageQuestions.map((q, idx) => (
         <div key={idx} className="p-4 border rounded bg-gray-50 mb-4">
           <p className="font-semibold mb-2">
@@ -89,9 +132,7 @@ export default function Quiz() {
                 key={i}
                 onClick={() => handleAnswer(idx, opt)}
                 className={`w-full py-2 px-4 border rounded hover:bg-blue-100 ${
-                  answers[pageIndex * PAGE_SIZE + idx] === opt
-                    ? "bg-blue-200"
-                    : ""
+                  answers[pageIndex * PAGE_SIZE + idx] === opt ? "bg-blue-200" : ""
                 }`}
               >
                 {opt}
@@ -100,14 +141,17 @@ export default function Quiz() {
           </div>
         </div>
       ))}
+
       <button
         onClick={nextPage}
+        disabled={submitting}
         className="w-full py-2 bg-blue-600 text-white rounded-lg"
       >
-        {pageIndex * PAGE_SIZE + PAGE_SIZE >= questions.length
-          ? "Finish Quiz"
-          : "Next Page"}
+        {submitting ? "Analyzing..." :
+          (pageIndex * PAGE_SIZE + PAGE_SIZE >= questions.length ? "Finish Quiz" : "Next Page")}
       </button>
+
+      {error && <p className="mt-3 text-red-600">{error}</p>}
     </div>
   );
 }
