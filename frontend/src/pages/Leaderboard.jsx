@@ -1,68 +1,150 @@
-import { useMemo, useState } from "react";
-import raw from "../data/students.mock.json";
-import { scoreUser } from "../utils/score";
+// src/pages/Leaderboard.jsx
+import React, { useState } from "react";
+import achievementsData from "../data/achievements";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Leaderboard() {
-  const [dept, setDept] = useState("all");
-  const [range, setRange] = useState("6m");
+  const [selectedYear, setSelectedYear] = useState("all");
+  const [timeRange, setTimeRange] = useState("all");
+  const [selectedProfile, setSelectedProfile] = useState(null);
 
-  const scored = useMemo(() => {
-    let list = raw;
-    if (dept !== "all") list = list.filter(s => s.dept === dept);
-    return list
-      .map(u => ({ ...u, metrics: scoreUser(u, range) }))
-      .sort((a,b) => b.metrics.total - a.metrics.total);
-  }, [dept, range]);
+  const isInRange = (dateStr, range) => {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffDays = (now - date) / (1000 * 60 * 60 * 24);
+
+    switch (range) {
+      case "present": return diffDays <= 7;
+      case "1month": return diffDays <= 30;
+      case "6months": return diffDays <= 180;
+      case "1year": return diffDays <= 365;
+      default: return true;
+    }
+  };
+
+  // Filter achievements based on selectedYear and timeRange
+  const filteredAchievements = achievementsData.filter(
+    (a) => (selectedYear === "all" || a.year === parseInt(selectedYear)) &&
+           isInRange(a.date, timeRange)
+  );
+
+  // Aggregate points and achievements per student
+  const students = filteredAchievements.reduce((acc, a) => {
+    if (!acc[a.name]) {
+      acc[a.name] = {
+        id: a.id,
+        name: a.name,
+        year: a.year,
+        points: 0,
+        achievements: [],
+      };
+    }
+    acc[a.name].points += a.points;
+    acc[a.name].achievements.push(a);
+    return acc;
+  }, {});
+
+  const ranked = Object.values(students).sort((a, b) => b.points - a.points);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Leaderboard</h1>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">🏆 Leaderboard</h1>
 
-      <div className="flex gap-3 mb-4">
-        <select className="border rounded p-2" value={dept} onChange={(e)=>setDept(e.target.value)}>
-          <option value="all">All Departments</option>
-          <option value="CSE">CSE</option><option value="ECE">ECE</option>
-          <option value="ME">ME</option><option value="DESIGN">DESIGN</option>
+      {/* Filters */}
+      <div className="flex gap-4 mb-6">
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="all">All Years</option>
+          <option value="1">Year 1</option>
+          <option value="2">Year 2</option>
+          <option value="3">Year 3</option>
+          <option value="4">Year 4</option>
         </select>
-        <select className="border rounded p-2" value={range} onChange={(e)=>setRange(e.target.value)}>
-          <option value="1m">Last 1 month</option>
-          <option value="6m">Last 6 months</option>
-          <option value="1y">Last 1 year</option>
-          <option value="all">All time</option>
+
+        <select
+          value={timeRange}
+          onChange={(e) => setTimeRange(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="all">All Time</option>
+          <option value="present">This Week</option>
+          <option value="1month">Last 1 Month</option>
+          <option value="6months">Last 6 Months</option>
+          <option value="1year">Last 1 Year</option>
         </select>
       </div>
 
-      <div className="bg-white rounded-2xl shadow overflow-x-auto">
-        <table className="w-full">
-          <thead className="text-left bg-gray-50">
-            <tr>
-              <th className="p-3">Rank</th>
-              <th className="p-3">Student</th>
-              <th className="p-3">Dept</th>
-              <th className="p-3">Projects</th>
-              <th className="p-3">Skills</th>
-              <th className="p-3">Endorse</th>
-              <th className="p-3">ATS</th>
-              <th className="p-3">Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scored.map((s, i) => (
-              <tr key={s.id} className="border-t">
-                <td className="p-3 font-semibold">{i+1}</td>
-                <td className="p-3">{s.name}</td>
-                <td className="p-3">{s.dept}</td>
-                <td className="p-3">{s.metrics.projPts}</td>
-                <td className="p-3">{s.metrics.skillPts}</td>
-                <td className="p-3">{s.metrics.endorsements}</td>
-                <td className="p-3">{s.metrics.ats}</td>
-                <td className="p-3 font-bold">{s.metrics.total}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Leaderboard Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {ranked.map((s, idx) => (
+          <motion.div
+            key={s.name}
+            layout
+            whileHover={{ scale: 1.05 }}
+            onClick={() => setSelectedProfile(s)}
+            className="cursor-pointer bg-white shadow-lg rounded-2xl p-4 flex flex-col items-center"
+          >
+            <div className="text-2xl font-bold">#{idx + 1}</div>
+            <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-xl font-semibold">
+              {s.name[0]}
+            </div>
+            <div className="mt-2 text-lg font-semibold">{s.name}</div>
+            <div className="text-gray-600">Year {s.year}</div>
+            <div className="mt-2 text-xl font-bold text-blue-600">
+              {s.points} pts
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      {/* Profile Modal */}
+      <AnimatePresence>
+        {selectedProfile && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white p-6 rounded-xl max-w-lg w-full shadow-xl"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+            >
+              <h2 className="text-2xl font-bold mb-4">
+                {selectedProfile.name} – Year {selectedProfile.year}
+              </h2>
+              <p className="mb-4 text-lg font-semibold">
+                Total Points: {selectedProfile.points}
+              </p>
+              <ul className="space-y-2 max-h-60 overflow-y-auto">
+                {selectedProfile.achievements.map((a) => (
+                  <li
+                    key={a.project}
+                    className="border p-2 rounded-lg shadow-sm"
+                  >
+                    <strong>{a.project}</strong> – {a.points} pts
+                    <br />
+                    <span className="text-sm text-gray-500">
+                      {new Date(a.date).toLocaleDateString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => setSelectedProfile(null)}
+                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
