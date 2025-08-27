@@ -1,7 +1,7 @@
 // src/pages/Leaderboard.jsx
 import React, { useState } from "react";
 import achievementsData from "../data/achievements";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 export default function Leaderboard() {
   const [selectedYear, setSelectedYear] = useState("all");
