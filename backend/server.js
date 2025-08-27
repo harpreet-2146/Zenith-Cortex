@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const resumeRoutes = require("./routes/resume");
 const quizRoutes = require("./routes/quiz");
-import profileRoutes from './routes/profile.js';
+const profileRoutes = require('./routes/profile.js');
+
 
 const app = express();
 app.use(cors());

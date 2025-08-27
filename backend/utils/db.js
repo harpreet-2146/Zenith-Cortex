@@ -1,15 +1,18 @@
-// backend/db.js
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
-import path from 'path';
+const { Low } = require('lowdb');
+const { JSONFile } = require('lowdb/node');
+const path = require('path');
 
-const file = path.join(process.cwd(), 'backend', 'achievements.json');
+const file = path.join(__dirname, '..', 'db.json');
 const adapter = new JSONFile(file);
-const db = new Low(adapter);
 
-// Initialize default structure if empty
-await db.read();
-db.data ||= { achievements: [], users: [] };
-await db.write();
+// Pass default data here ⬇️
+const db = new Low(adapter, { users: [], achievements: [] });
 
-export default db;
+async function initDB() {
+  await db.read();
+  await db.write(); // ensure file exists with default data
+}
+
+initDB();
+
+module.exports = db;

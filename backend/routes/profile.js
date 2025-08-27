@@ -1,21 +1,34 @@
 // backend/routes/profile.js
-import express from 'express';
-import db from '../utils/db.js';
+const express = require("express");
+const db = require("../utils/db.js");
 
 const router = express.Router();
 
 // GET all achievements
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   await db.read();
   res.json(db.data.achievements);
 });
 
 // POST new achievement
-router.post('/add', async (req, res) => {
-  const { userId, title, description, points, date, category, github, linkedin, certificate, visibility } = req.body;
+router.post("/add", async (req, res) => {
+  const {
+    userId,
+    title,
+    description,
+    points,
+    date,
+    category,
+    github,
+    linkedin,
+    certificate,
+    visibility,
+  } = req.body;
 
   if (!userId || !title || !description) {
-    return res.status(400).json({ error: 'userId, title, and description are required' });
+    return res
+      .status(400)
+      .json({ error: "userId, title, and description are required" });
   }
 
   await db.read();
@@ -26,11 +39,11 @@ router.post('/add', async (req, res) => {
     description,
     points: points || 0,
     date: date || new Date().toISOString(),
-    category: category || 'General',
-    github: github || '',
-    linkedin: linkedin || '',
-    certificate: certificate || '',
-    visibility: visibility || 'public'
+    category: category || "General",
+    github: github || "",
+    linkedin: linkedin || "",
+    certificate: certificate || "",
+    visibility: visibility || "public",
   };
 
   db.data.achievements.push(newAchievement);
@@ -39,4 +52,4 @@ router.post('/add', async (req, res) => {
   res.json({ success: true, achievement: newAchievement });
 });
 
-export default router;
+module.exports = router; // 👈 CommonJS export
