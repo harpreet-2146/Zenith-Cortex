@@ -3,3 +3,4 @@
   "ignore": ["backend/db.json"],
   "ext": "js,json"
 }
+

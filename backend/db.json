@@ -1,4 +1,67 @@
 {
-  "users": [],
-  "achievements": []
+  "users": [
+    {
+      "id": 1,
+      "role": "student",
+      "username": "student1",
+      "password": "pass123",
+      "profile": {
+        "name": "Rohan Sharma",
+        "srn": "PES1UG22CS001",
+        "branch": "CSE",
+        "semester": 5,
+        "achievements": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "role": "faculty",
+      "username": "faculty1",
+      "password": "pass123",
+      "profile": {
+        "name": "Prof. Meera",
+        "department": "CSE",
+        "students": [
+          1
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "role": "recruiter",
+      "username": "recruiter1",
+      "password": "pass123",
+      "profile": {
+        "company": "Infosys",
+        "interest": "AI/ML",
+        "shortlisted": []
+      }
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "userId": 1,
+      "title": "Hackathon Winner",
+      "description": "Won 1st place at Smart India Hackathon",
+      "points": 100
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "title": "Research Paper",
+      "description": "Published IEEE paper on Cybersecurity",
+      "points": 80
+    },
+    {
+      "id": 1756290183021,
+      "userId": 1,
+      "title": "Open Source Contribution",
+      "description": "Contributed to an open-source project on GitHub",
+      "points": 50
+    }
+  ]
 }
