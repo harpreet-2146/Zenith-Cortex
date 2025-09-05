@@ -1,28 +1,31 @@
-
 // backend/routes/auth.js
-import express from "express";
-import jwt from "jsonwebtoken";
-import db from "../utils/db.js";
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const db = require("../utils/db");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
+const JWT_SECRET = "supersecret123"; // you can move this to .env later
 
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  await db.read();
-  const user = db.data.users.find(u => u.username === username && u.password === password);
-  if (!user) return res.status(401).json({ error: "Invalid credentials" });
+// Login route
+router.post("/login", (req, res) => {
+  const { username, password, role } = req.body;
 
+  // Search for user in db
+  const user = db.get("users").find({ username, password, role }).value();
+
+  if (!user) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  // Generate JWT
   const token = jwt.sign(
-    { id: user.id, role: user.role, username: user.username },
+    { id: user.id, username: user.username, role: user.role },
     JWT_SECRET,
-    { expiresIn: "365d" } // 1 year
+    { expiresIn: "1y" }
   );
 
-  res.json({
-    token,
-    user: { id: user.id, name: user.name, srn: user.srn, role: user.role, avatar: user.avatar }
-  });
+  // Return token + user info (without password)
+  res.json({ token, user: { ...user, password: undefined } });
 });
 
-export default router;
+module.exports = router;
