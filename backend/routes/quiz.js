@@ -1,41 +1,49 @@
+// backend/routes/quiz.js
 const express = require("express");
 const router = express.Router();
-const { callVertex } = require("../utils/vertex");
-const { extractJson } = require("../utils/jsonHelper");
+const { callVertexJSON } = require("../utils/vertex");
 
-/* --- Normalize professions: top 5, keep percentages independent --- */
-function normalizeTopProfessions(list) {
-  if (!Array.isArray(list)) return [];
-  let items = list.map(entry => {
-    if (typeof entry === "string") {
-      return { profession: entry, matchPercentage: 0, reasons: [] };
-    }
-    if (entry && typeof entry === "object") {
-      return {
-        profession: String(entry.profession || entry.title || entry.name || "").trim(),
-        matchPercentage: Math.min(
-          100,
-          Math.max(0, Number(entry.matchPercentage ?? entry.percentage ?? entry.score ?? 0))
-        ),
-        reasons: Array.isArray(entry.reasons) ? entry.reasons : []
-      };
-    }
-    return null;
-  }).filter(Boolean).filter(it => it.profession);
+// Schema to enforce a stable shape
+const quizSchema = {
+  type: "object",
+  properties: {
+    topProfessions: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          profession: { type: "string" },
+          matchPercentage: { type: "integer", minimum: 0, maximum: 100 },
+          reasons: { type: "array", items: { type: "string" } },
+        },
+        required: ["profession", "matchPercentage"],
+        additionalProperties: false,
+      },
+    },
+    roadmaps: {
+      type: "object",
+      additionalProperties: {
+        type: "object",
+        properties: {
+          beginner: { type: "array", items: { type: "object", properties: {
+            title: { type: "string" }, why: { type: "string" }
+          }, required: ["title"], additionalProperties: false } },
+          intermediate: { type: "array", items: { type: "object", properties: {
+            title: { type: "string" }, why: { type: "string" }
+          }, required: ["title"], additionalProperties: false } },
+          advanced: { type: "array", items: { type: "object", properties: {
+            title: { type: "string" }, why: { type: "string" }
+          }, required: ["title"], additionalProperties: false } },
+        },
+        required: ["beginner", "intermediate", "advanced"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["topProfessions", "roadmaps"],
+  additionalProperties: false,
+};
 
-  return items.slice(0, 5);
-}
-
-/* --- Ensure roadmap structure --- */
-function ensureRoadmapStructure(rm) {
-  return {
-    beginner: Array.isArray(rm?.beginner) ? rm.beginner : [],
-    intermediate: Array.isArray(rm?.intermediate) ? rm.intermediate : [],
-    advanced: Array.isArray(rm?.advanced) ? rm.advanced : []
-  };
-}
-
-/* --- Route: analyze quiz answers --- */
 router.post("/analyze", async (req, res) => {
   try {
     const { answers } = req.body;
@@ -44,56 +52,33 @@ router.post("/analyze", async (req, res) => {
     }
 
     const prompt = `
-You are an expert career advisor and roadmap generator.
-You will receive a JSON array of the user's selected quiz answers. Analyze them carefully and produce ONLY valid JSON (no explanation, no code fences).
+You are an expert career advisor.
+Given this JSON array of quiz answers, return ONLY JSON that matches the provided schema.
 
-REQUIRED OUTPUT SCHEMA:
-{
-  "topProfessions": [
-    { "profession": "Software Engineer", "matchPercentage": 92, "reasons": ["answer1","answer2"] }
-  ],
-  "roadmaps": {
-    "Software Engineer": {
-      "beginner": [ { "title": "Learn Python basics", "why": "foundation for problem solving" } ],
-      "intermediate": [ { "title": "Build a full-stack app", "why": "end-to-end experience" } ],
-      "advanced": [ { "title": "Design scalable systems", "why": "prepare for senior roles" } ]
-    }
-  }
-}
+User answers:
+${JSON.stringify(answers).slice(0, 15000)}
 
-User answers (array):
-${JSON.stringify(answers, null, 2)}
-
-IMPORTANT:
-- Provide exactly 5 top professions (or fewer if strongly justified).
-- matchPercentage must be an integer **0–100**, scored **independently** for each profession (NOT rescaled to sum 100).
-- Each profession must have a roadmap.
-- Output ONLY valid JSON, nothing else.
+Rules:
+- Provide up to 5 top professions.
+- Each profession must include an independent integer matchPercentage (0–100).
+- For every profession, include a roadmap with beginner/intermediate/advanced steps.
+- Output must be ONLY strict JSON. No markdown, no commentary.
 `;
 
-    const raw = await callVertex(prompt);
-    console.log("Raw AI response (quiz):", raw && raw.slice ? raw.slice(0, 500) : raw);
-
-    let parsed = extractJson(raw);
-
-    if (!parsed || typeof parsed !== "object") {
-      console.error("Failed parsing AI JSON:", raw);
-      return res.status(502).json({ error: "AI returned non-JSON or unparsable output", raw });
+    let obj;
+    try {
+      obj = await callVertexJSON({
+        prompt,
+        schema: quizSchema,
+        temperature: 0,
+        maxOutputTokens: 2048,
+      });
+    } catch (err) {
+      console.error("Vertex JSON error (quiz):", err?.message || err);
+      return res.status(502).json({ error: "AI returned non-JSON or invalid schema output" });
     }
 
-    const topRaw = parsed.topProfessions || parsed.professions || parsed.results || [];
-    const normalizedTop = normalizeTopProfessions(topRaw);
-
-    const givenRoadmaps = parsed.roadmaps || parsed.roadmap || {};
-    const normalizedRoadmaps = {};
-    for (const p of normalizedTop) {
-      normalizedRoadmaps[p.profession] = ensureRoadmapStructure(givenRoadmaps[p.profession] || {});
-    }
-
-    return res.json({
-      topProfessions: normalizedTop,
-      roadmaps: normalizedRoadmaps
-    });
+    return res.json(obj);
   } catch (err) {
     console.error("Error analyzing quiz:", err);
     return res.status(500).json({ error: "Failed to analyze quiz results", details: String(err) });
@@ -101,3 +86,110 @@ IMPORTANT:
 });
 
 module.exports = router;
+
+
+
+
+// const express = require("express");
+// const router = express.Router();
+// const { callVertex } = require("../utils/vertex");
+// const { extractJson } = require("../utils/jsonHelper");
+
+// /* --- Normalize professions: top 5, keep percentages independent --- */
+// function normalizeTopProfessions(list) {
+//   if (!Array.isArray(list)) return [];
+//   let items = list.map(entry => {
+//     if (typeof entry === "string") {
+//       return { profession: entry, matchPercentage: 0, reasons: [] };
+//     }
+//     if (entry && typeof entry === "object") {
+//       return {
+//         profession: String(entry.profession || entry.title || entry.name || "").trim(),
+//         matchPercentage: Math.min(
+//           100,
+//           Math.max(0, Number(entry.matchPercentage ?? entry.percentage ?? entry.score ?? 0))
+//         ),
+//         reasons: Array.isArray(entry.reasons) ? entry.reasons : []
+//       };
+//     }
+//     return null;
+//   }).filter(Boolean).filter(it => it.profession);
+
+//   return items.slice(0, 5);
+// }
+
+// /* --- Ensure roadmap structure --- */
+// function ensureRoadmapStructure(rm) {
+//   return {
+//     beginner: Array.isArray(rm?.beginner) ? rm.beginner : [],
+//     intermediate: Array.isArray(rm?.intermediate) ? rm.intermediate : [],
+//     advanced: Array.isArray(rm?.advanced) ? rm.advanced : []
+//   };
+// }
+
+// /* --- Route: analyze quiz answers --- */
+// router.post("/analyze", async (req, res) => {
+//   try {
+//     const { answers } = req.body;
+//     if (!answers || !Array.isArray(answers) || answers.length === 0) {
+//       return res.status(400).json({ error: "No answers provided (expected array)" });
+//     }
+
+//     const prompt = `
+// You are an expert career advisor and roadmap generator.
+// You will receive a JSON array of the user's selected quiz answers. Analyze them carefully and produce ONLY valid JSON (no explanation, no code fences).
+
+// REQUIRED OUTPUT SCHEMA:
+// {
+//   "topProfessions": [
+//     { "profession": "Software Engineer", "matchPercentage": 92, "reasons": ["answer1","answer2"] }
+//   ],
+//   "roadmaps": {
+//     "Software Engineer": {
+//       "beginner": [ { "title": "Learn Python basics", "why": "foundation for problem solving" } ],
+//       "intermediate": [ { "title": "Build a full-stack app", "why": "end-to-end experience" } ],
+//       "advanced": [ { "title": "Design scalable systems", "why": "prepare for senior roles" } ]
+//     }
+//   }
+// }
+
+// User answers (array):
+// ${JSON.stringify(answers, null, 2)}
+
+// IMPORTANT:
+// - Provide exactly 5 top professions (or fewer if strongly justified).
+// - matchPercentage must be an integer **0–100**, scored **independently** for each profession (NOT rescaled to sum 100).
+// - Each profession must have a roadmap.
+// - Output ONLY valid JSON, nothing else.
+// `;
+
+//     const raw = await callVertex(prompt);
+//     console.log("Raw AI response (quiz):", raw && raw.slice ? raw.slice(0, 500) : raw);
+
+//     let parsed = extractJson(raw);
+
+//     if (!parsed || typeof parsed !== "object") {
+//       console.error("Failed parsing AI JSON:", raw);
+//       return res.status(502).json({ error: "AI returned non-JSON or unparsable output", raw });
+//     }
+
+//     const topRaw = parsed.topProfessions || parsed.professions || parsed.results || [];
+//     const normalizedTop = normalizeTopProfessions(topRaw);
+
+//     const givenRoadmaps = parsed.roadmaps || parsed.roadmap || {};
+//     const normalizedRoadmaps = {};
+//     for (const p of normalizedTop) {
+//       normalizedRoadmaps[p.profession] = ensureRoadmapStructure(givenRoadmaps[p.profession] || {});
+//     }
+
+//     return res.json({
+//       topProfessions: normalizedTop,
+//       roadmaps: normalizedRoadmaps
+//     });
+//   } catch (err) {
+//     console.error("Error analyzing quiz:", err);
+//     return res.status(500).json({ error: "Failed to analyze quiz results", details: String(err) });
+//   }
+// });
+
+// module.exports = router;

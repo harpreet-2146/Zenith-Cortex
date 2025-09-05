@@ -72,49 +72,42 @@ export default function Resume() {
       </button>
 
       {result && !result.error && (
-        <div className="space-y-4">
-          <div className="p-4 border rounded bg-green-50">
-            <h2 className="font-bold">ATS Score</h2>
-            <p>{result.atsScore}</p>
-          </div>
+  <div className="space-y-4">
+    <div className="p-4 border rounded bg-green-50">
+      <h2 className="font-bold mb-1">ATS Score</h2>
+      <p className="text-2xl">{result.atsScore}</p>
+    </div>
 
-          <div className="p-4 border rounded bg-blue-50">
-            <h2 className="font-bold">Pros</h2>
-            <ul className="list-disc pl-6">
-              {result.pros.map((p, i) => (
-                <li key={i}>{p}</li>
-              ))}
-            </ul>
-          </div>
+    <div className="p-4 border rounded">
+      <h3 className="font-bold mb-1">Pros</h3>
+      <ul className="list-disc pl-5">
+        {result.pros?.map((p, i) => <li key={i}>{p}</li>)}
+      </ul>
+    </div>
 
-          <div className="p-4 border rounded bg-red-50">
-            <h2 className="font-bold">Cons</h2>
-            <ul className="list-disc pl-6">
-              {result.cons.map((c, i) => (
-                <li key={i}>{c}</li>
-              ))}
-            </ul>
-          </div>
+    <div className="p-4 border rounded">
+      <h3 className="font-bold mb-1">Cons</h3>
+      <ul className="list-disc pl-5">
+        {result.cons?.map((c, i) => <li key={i}>{c}</li>)}
+      </ul>
+    </div>
 
-          <div className="p-4 border rounded bg-yellow-50">
-            <h2 className="font-bold">Improvements</h2>
-            <ul className="list-disc pl-6">
-              {result.improvements.map((imp, i) => (
-                <li key={i}>{imp}</li>
-              ))}
-            </ul>
-          </div>
+    <div className="p-4 border rounded">
+      <h3 className="font-bold mb-1">Improvements</h3>
+      <ul className="list-disc pl-5">
+        {result.improvements?.map((x, i) => <li key={i}>{x}</li>)}
+      </ul>
+    </div>
 
-          <div className="p-4 border rounded bg-purple-50">
-            <h2 className="font-bold">Keyword Suggestions</h2>
-            <ul className="list-disc pl-6">
-              {result.keywordSuggestions.map((kw, i) => (
-                <li key={i}>{kw}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
+    <div className="p-4 border rounded">
+      <h3 className="font-bold mb-1">Keyword Suggestions</h3>
+      <ul className="list-disc pl-5">
+        {result.keywordSuggestions?.map((k, i) => <li key={i}>{k}</li>)}
+      </ul>
+    </div>
+  </div>
+)}
+
 
       {result?.error && <p className="text-red-500 font-bold">{result.error}</p>}
     </div>
