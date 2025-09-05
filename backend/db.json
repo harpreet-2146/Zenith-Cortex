@@ -1,6 +1,18 @@
 {
   "users": [
     {
+      "id": 999,
+      "username": "demostudent",
+      "password": "demostudentpassword",
+      "role": "student",
+      "name": "Demo Student",
+      "srn": "2025CSEDEMO",
+      "class": "CSE-A",
+      "year": 2,
+      "branch": "CSE",
+      "department": "Engineering"
+    },
+    {
       "id": 1,
       "srn": "2025CSE001",
       "username": "student1",
@@ -11,7 +23,7 @@
       "year": 2,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 20
     },
     {
@@ -25,7 +37,7 @@
       "year": 2,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 35
     },
     {
@@ -39,7 +51,7 @@
       "year": 3,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 40
     },
     {
@@ -53,7 +65,7 @@
       "year": 1,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -67,7 +79,7 @@
       "year": 4,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 50
     },
     {
@@ -81,7 +93,7 @@
       "year": 3,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 25
     },
     {
@@ -95,7 +107,7 @@
       "year": 2,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 30
     },
     {
@@ -109,7 +121,7 @@
       "year": 1,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 10
     },
     {
@@ -123,7 +135,7 @@
       "year": 4,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 45
     },
     {
@@ -137,7 +149,7 @@
       "year": 3,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 20
     },
     {
@@ -151,7 +163,7 @@
       "year": 2,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 30
     },
     {
@@ -165,7 +177,7 @@
       "year": 1,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -179,7 +191,7 @@
       "year": 3,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 35
     },
     {
@@ -193,7 +205,7 @@
       "year": 4,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 50
     },
     {
@@ -207,7 +219,7 @@
       "year": 2,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 25
     },
     {
@@ -221,7 +233,7 @@
       "year": 1,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 10
     },
     {
@@ -235,7 +247,7 @@
       "year": 3,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 40
     },
     {
@@ -249,7 +261,7 @@
       "year": 4,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 45
     },
     {
@@ -263,7 +275,7 @@
       "year": 2,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 20
     },
     {
@@ -277,7 +289,7 @@
       "year": 1,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -291,7 +303,7 @@
       "year": 3,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 30
     },
     {
@@ -305,7 +317,7 @@
       "year": 2,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 25
     },
     {
@@ -319,7 +331,7 @@
       "year": 4,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 50
     },
     {
@@ -333,7 +345,7 @@
       "year": 1,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 10
     },
     {
@@ -347,7 +359,7 @@
       "year": 3,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 35
     },
     {
@@ -361,7 +373,7 @@
       "year": 2,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 25
     },
     {
@@ -375,7 +387,7 @@
       "year": 3,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 40
     },
     {
@@ -389,7 +401,7 @@
       "year": 1,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -403,7 +415,7 @@
       "year": 4,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 50
     },
     {
@@ -417,7 +429,7 @@
       "year": 2,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 30
     },
     {
@@ -431,7 +443,7 @@
       "year": 3,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 35
     },
     {
@@ -445,7 +457,7 @@
       "year": 1,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 10
     },
     {
@@ -459,7 +471,7 @@
       "year": 4,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 45
     },
     {
@@ -473,7 +485,7 @@
       "year": 2,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 20
     },
     {
@@ -487,7 +499,7 @@
       "year": 3,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 40
     },
     {
@@ -501,7 +513,7 @@
       "year": 1,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -515,7 +527,7 @@
       "year": 4,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 50
     },
     {
@@ -529,7 +541,7 @@
       "year": 2,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 25
     },
     {
@@ -543,7 +555,7 @@
       "year": 3,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 35
     },
     {
@@ -557,7 +569,7 @@
       "year": 1,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -571,7 +583,7 @@
       "year": 4,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 50
     },
     {
@@ -585,7 +597,7 @@
       "year": 2,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 25
     },
     {
@@ -599,7 +611,7 @@
       "year": 3,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 35
     },
     {
@@ -613,7 +625,7 @@
       "year": 1,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 10
     },
     {
@@ -627,7 +639,7 @@
       "year": 4,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 50
     },
     {
@@ -641,7 +653,7 @@
       "year": 2,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 20
     },
     {
@@ -655,7 +667,7 @@
       "year": 3,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "fox.jpeg",
+      "avatar": "koalo.jpg",
       "totalPoints": 40
     },
     {
@@ -669,7 +681,7 @@
       "year": 1,
       "department": "ECE",
       "branch": "ECE",
-      "avatar": "cat.jpeg",
+      "avatar": "cat.png",
       "totalPoints": 15
     },
     {
@@ -683,7 +695,7 @@
       "year": 4,
       "department": "ME",
       "branch": "Mechanical",
-      "avatar": "penguin.jpeg",
+      "avatar": "dog.jpg",
       "totalPoints": 50
     },
     {
@@ -697,7 +709,7 @@
       "year": 2,
       "department": "CSE",
       "branch": "CSE",
-      "avatar": "tiger.jpeg",
+      "avatar": "tiger.jpg",
       "totalPoints": 30
     }
   ],
