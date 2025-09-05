@@ -1,10 +1,10 @@
-// backend/routes/resume.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 const { callVertex } = require("../utils/vertex");
+const { extractJson } = require("../utils/jsonHelper");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -31,7 +31,8 @@ router.post("/analyse-file", upload.single("resume"), async (req, res) => {
     }
 
     const prompt = `
-You are an ATS resume analyzer and career coach. Analyze the following resume and return the response in **strict JSON format only**.
+You are an ATS resume analyzer and career coach.
+Analyze the following resume and return the response in **strict JSON format only**.
 
 SCHEMA:
 {
@@ -55,21 +56,13 @@ IMPORTANT:
 - Output ONLY valid JSON, no explanations.
     `;
 
-    const analysis = await callVertex(prompt);
+    const raw = await callVertex(prompt);
 
-    // 🔒 Try to safely extract JSON
-    let parsed;
-    try {
-      // If Gemini added extra text, extract the first {...} block
-      const jsonMatch = analysis.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        parsed = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("No JSON object found in response");
-      }
-    } catch (e) {
-      console.error("Failed to parse Vertex response:", analysis);
-      return res.status(502).json({ error: "AI returned non-JSON", raw: analysis });
+    let parsed = extractJson(raw);
+
+    if (!parsed) {
+      console.error("Failed to parse Vertex response:", raw);
+      return res.status(502).json({ error: "AI returned non-JSON or unparsable output", raw });
     }
 
     res.json(parsed);

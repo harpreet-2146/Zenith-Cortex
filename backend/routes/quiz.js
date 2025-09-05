@@ -1,31 +1,7 @@
-// backend/routes/quiz.js
 const express = require("express");
 const router = express.Router();
 const { callVertex } = require("../utils/vertex");
-
-/* --- Helper: extract JSON safely --- */
-function extractJson(text) {
-  if (!text || typeof text !== "string") return null;
-  let cleaned = text.replace(/```(?:json|js|txt)?/gi, "```");
-  if (cleaned.includes("```")) {
-    const parts = cleaned.split("```").filter(Boolean);
-    for (const p of parts) {
-      const m = p.match(/({[\s\S]*}|\[[\s\S]*\])/);
-      if (m) {
-        try { return JSON.parse(m[0]); } catch {}
-      }
-    }
-  }
-  const objMatch = text.match(/{[\s\S]*}/);
-  if (objMatch) {
-    try { return JSON.parse(objMatch[0]); } catch {}
-  }
-  const arrMatch = text.match(/\[[\s\S]*\]/);
-  if (arrMatch) {
-    try { return JSON.parse(arrMatch[0]); } catch {}
-  }
-  return null;
-}
+const { extractJson } = require("../utils/jsonHelper");
 
 /* --- Normalize professions: top 5, keep percentages independent --- */
 function normalizeTopProfessions(list) {
@@ -96,14 +72,9 @@ IMPORTANT:
 `;
 
     const raw = await callVertex(prompt);
-    console.log("Raw AI response (quiz):", raw && raw.slice ? raw.slice(0, 1000) : raw);
+    console.log("Raw AI response (quiz):", raw && raw.slice ? raw.slice(0, 500) : raw);
 
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch (e) {
-      parsed = extractJson(raw);
-    }
+    let parsed = extractJson(raw);
 
     if (!parsed || typeof parsed !== "object") {
       console.error("Failed parsing AI JSON:", raw);
