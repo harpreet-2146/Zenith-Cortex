@@ -1,13 +1,15 @@
-// utils/db.js
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
 
-// Create adapter for db.json
-const adapter = new FileSync("db.json");
-const db = low(adapter);
+// backend/utils/db.js
+import { Low, JSONFile } from "lowdb";
+import path from "path";
 
-// Set defaults if file is empty
-db.defaults({ users: [] }).write();
+const file = path.join(process.cwd(), "db.json");
+const adapter = new JSONFile(file);
+const db = new Low(adapter);
 
-module.exports = db;
+// initialize db
+await db.read();
+db.data ||= { users: [], achievements: [], notifications: [] };
+await db.write();
 
+export default db;
