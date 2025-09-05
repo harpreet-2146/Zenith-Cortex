@@ -1,9 +1,10 @@
+// backend/routes/resume.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
-const { callOllama } = require("../utils/ollama");
+const { callVertex } = require("../utils/vertex");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -30,18 +31,48 @@ router.post("/analyse-file", upload.single("resume"), async (req, res) => {
     }
 
     const prompt = `
-Role: You are Gemma, acting as a detailed ATS (Applicant Tracking System) resume analyzer.
+You are an ATS resume analyzer and career coach. Analyze the following resume and return the response in **strict JSON format only**.
 
-Task: Analyze the provided resume with a focus on ATS Score, Detailed Pros, Detailed Cons, and Recommendations for Improvement.
+SCHEMA:
+{
+  "atsScore": "<integer 1–5>",
+  "pros": ["list of strong points"],
+  "cons": ["list of weaknesses"],
+  "improvements": ["list of specific recommendations to make resume stronger"],
+  "keywordSuggestions": ["list of missing but important keywords for the target role"]
+}
 
-Resume:
+Resume Content:
 ${text}
 
 Target Job Role: ${targetRole}
-`;
 
-    const analysis = await callOllama(prompt);
-    res.json({ analysis });
+IMPORTANT:
+- atsScore must be 1–5 only (5 = excellent match, 1 = poor match).
+- pros/cons should be detailed but concise.
+- improvements must be actionable.
+- keywordSuggestions should be tailored to the job role.
+- Output ONLY valid JSON, no explanations.
+    `;
+
+    const analysis = await callVertex(prompt);
+
+    // 🔒 Try to safely extract JSON
+    let parsed;
+    try {
+      // If Gemini added extra text, extract the first {...} block
+      const jsonMatch = analysis.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        parsed = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error("No JSON object found in response");
+      }
+    } catch (e) {
+      console.error("Failed to parse Vertex response:", analysis);
+      return res.status(502).json({ error: "AI returned non-JSON", raw: analysis });
+    }
+
+    res.json(parsed);
   } catch (err) {
     console.error("Error analysing resume:", err);
     res.status(500).json({ error: "Failed to analyse resume" });

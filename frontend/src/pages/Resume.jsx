@@ -1,3 +1,4 @@
+// frontend/src/pages/Resume.jsx
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -7,7 +8,6 @@ export default function Resume() {
   const [loading, setLoading] = useState(false);
   const [targetRole, setTargetRole] = useState("");
 
-  // Drag & drop handler
   const onDrop = (acceptedFiles) => {
     setFile(acceptedFiles[0]);
   };
@@ -15,7 +15,7 @@ export default function Resume() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: ".pdf,.doc,.docx",
-    multiple: false
+    multiple: false,
   });
 
   const handleUpload = async () => {
@@ -32,7 +32,7 @@ export default function Resume() {
         body: formData,
       });
       const data = await res.json();
-      setResult(data.analysis);
+      setResult(data); // ✅ directly store JSON object now
     } catch (err) {
       console.error("❌ Error:", err);
       setResult({ error: "Error analysing resume. Please try again." });
@@ -72,22 +72,48 @@ export default function Resume() {
       </button>
 
       {result && !result.error && (
-          <div className="space-y-4">
-  {result && (
-    <>
-      <div className="p-4 border rounded bg-green-50 break-words whitespace-pre-line">
-        <h2 className="font-bold">ATS Score</h2>
-        <div>{result.match(/ATS Score:[\s\S]*?(?=Recommendations for Improvement:|$)/)?.[0]}</div>
-      </div>
+        <div className="space-y-4">
+          <div className="p-4 border rounded bg-green-50">
+            <h2 className="font-bold">ATS Score</h2>
+            <p>{result.atsScore}</p>
+          </div>
 
-      <div className="p-4 border rounded bg-yellow-50 break-words whitespace-pre-line">
-        <h2 className="font-bold">Recommendations</h2>
-        <div>{result.match(/Recommendations for Improvement:[\s\S]*/)?.[0]}</div>
-      </div>
-    </>
-  )}
-</div>
+          <div className="p-4 border rounded bg-blue-50">
+            <h2 className="font-bold">Pros</h2>
+            <ul className="list-disc pl-6">
+              {result.pros.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+          </div>
 
+          <div className="p-4 border rounded bg-red-50">
+            <h2 className="font-bold">Cons</h2>
+            <ul className="list-disc pl-6">
+              {result.cons.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="p-4 border rounded bg-yellow-50">
+            <h2 className="font-bold">Improvements</h2>
+            <ul className="list-disc pl-6">
+              {result.improvements.map((imp, i) => (
+                <li key={i}>{imp}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="p-4 border rounded bg-purple-50">
+            <h2 className="font-bold">Keyword Suggestions</h2>
+            <ul className="list-disc pl-6">
+              {result.keywordSuggestions.map((kw, i) => (
+                <li key={i}>{kw}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
       )}
 
       {result?.error && <p className="text-red-500 font-bold">{result.error}</p>}
