@@ -12,12 +12,11 @@ export default function Profile() {
     proofLink: "",
   });
 
-  // Fetch student's achievements on load
+  // Fetch achievements on load
   useEffect(() => {
     async function fetchAchievements() {
       try {
-        const res = await axios.get("/api/achievements"); // backend route to get all achievements
-        // Filter for current student
+        const res = await axios.get("http://localhost:5000/api/achievements");
         const myAchievements = res.data.filter((a) => a.studentId === user.id);
         setAchievements(myAchievements);
       } catch (err) {
@@ -27,7 +26,7 @@ export default function Profile() {
     fetchAchievements();
   }, [user.id]);
 
-  // Dummy points calculation (simulate Vertex AI)
+  // Dummy points calculation
   const calculatePoints = (title, domain, description) => {
     const lengthScore = Math.min(description.length / 50, 20); // longer description → more points
     let domainScore = 0;
@@ -65,7 +64,6 @@ export default function Profile() {
     const points = calculatePoints(form.title, form.domain, form.description);
 
     const newAchievement = {
-      id: Date.now(),
       studentId: user.id,
       title: form.title,
       description: form.description,
@@ -75,8 +73,11 @@ export default function Profile() {
     };
 
     try {
-      await axios.post("/api/achievements", newAchievement); // backend route to save achievement
-      setAchievements([...achievements, newAchievement]);
+      const res = await axios.post(
+        "http://localhost:5000/api/achievements",
+        newAchievement
+      );
+      setAchievements([...achievements, res.data]);
       setForm({ title: "", description: "", domain: "Project", proofLink: "" });
     } catch (err) {
       console.error(err);
@@ -86,7 +87,7 @@ export default function Profile() {
   const totalPoints = achievements.reduce((acc, a) => acc + a.points, 0);
 
   return (
-    <div className="profile-page p-6">
+    <div className="p-6 max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{user.name}'s Profile</h1>
         <button
@@ -97,7 +98,7 @@ export default function Profile() {
         </button>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 space-y-1">
         <p><strong>SRN:</strong> {user.srn}</p>
         <p><strong>Class:</strong> {user.class}</p>
         <p><strong>Year:</strong> {user.year}</p>
