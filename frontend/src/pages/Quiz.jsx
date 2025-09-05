@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import quizQuestions from "../data/quiz.questions.json";
 
 export default function Quiz() {
@@ -10,6 +10,10 @@ export default function Quiz() {
   const [submitting, setSubmitting] = useState(false);
   const [aiResult, setAiResult] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pageIndex]);
 
   if (!questions.length) return <p className="p-6">No quiz questions available.</p>;
 
