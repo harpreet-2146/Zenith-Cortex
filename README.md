@@ -6,6 +6,8 @@
 
 zenith cortex
 backend>
+     config>
+           vertex-key.json
      routes>
            auth.js
            leaderboard.js
