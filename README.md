@@ -16,7 +16,7 @@ backend>
            resume.js
      utils>
            db.js
-           ollama.js
+           vertex.js
      .env
      db.json
      nodemon.json
@@ -25,12 +25,13 @@ backend>
 frontend>
     src>
        components>
-       ASisstantDrawer.jsx
+       AssistantDrawer.jsx
        Navbar.jsx
        Sidebar.jsx
     context>
        AuthContext.jsx
     data>
+       achievements.js
        quiz.questions.json
     layouts>
        MainLayout.jsx
