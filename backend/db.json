@@ -12,7 +12,7 @@
       "department": "CSE",
       "branch": "AI ML",
       "avatar": "dog.jpg",
-      "totalPoints": 30
+      "totalPoints": 40
     },
     {
       "id": 2,
@@ -755,6 +755,15 @@
       "proof": "/uploads/1757187586512.jpg",
       "points": 10,
       "createdAt": "2025-09-06T19:39:46.529Z"
+    },
+    {
+      "id": 1757199320312,
+      "userId": 1,
+      "title": "Ai sustainability ",
+      "description": "Balancing AI's double-edged nature: AI can be both a solution and a challenge for sustainability. Workshops examine how to leverage AI's benefits while addressing its own environmental impact, such as the high energy consumption of training large models.\r\nAddressing the UN Sustainable Development Goals (SDGs): Many workshops focus on specific SDGs, with hands-on exercises and case studies on how AI can accelerate progress in areas like climate action, responsible production, quality education, and clean energy.",
+      "proof": null,
+      "points": 10,
+      "createdAt": "2025-09-06T22:55:20.312Z"
     }
   ],
   "notifications": []
