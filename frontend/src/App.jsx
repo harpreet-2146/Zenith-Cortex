@@ -2,7 +2,8 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { AuthProvider} from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 import MainLayout from "./layouts/MainLayout";
 
 // Pages
@@ -16,7 +17,7 @@ import Login from "./pages/Login";
 
 // ProtectedRoute component
 function ProtectedRoute({ children }) {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   if (!user) {
     return <Navigate to="/login" replace />;
   }

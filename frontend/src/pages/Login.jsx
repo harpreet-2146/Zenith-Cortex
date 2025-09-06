@@ -1,12 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";   // ✅ useAuth, not AuthContext
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();   // ✅ direct hook
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,10 +17,8 @@ export default function Login() {
         password,
       });
 
-      // login stores the full user object including role
       login(res.data);
 
-      // Redirect based on role (optional)
       if (res.data.role === "student") navigate("/profile");
       else if (res.data.role === "faculty") navigate("/mentorhub");
       else if (res.data.role === "recruiter") navigate("/leaderboard");
@@ -43,7 +41,7 @@ export default function Login() {
           className="border p-2 w-full"
         />
         <input
-          type="text"
+          type="password"   // ✅ better than text
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

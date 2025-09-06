@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json()); // for JSON requests
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true })); // ✅ handles form submissions
+app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/resume", resumeRoutes);

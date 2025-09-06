@@ -1,93 +1,78 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
 
 export default function Profile() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
   const [achievements, setAchievements] = useState([]);
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    domain: "Project",
-    proofLink: "",
-  });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [link, setLink] = useState("");
+  const [file, setFile] = useState(null);
+  const [totalPoints, setTotalPoints] = useState(0);
 
-  // Fetch achievements on load
+  // Fetch achievements
   useEffect(() => {
-    async function fetchAchievements() {
+    const fetchAchievements = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/achievements");
-        const myAchievements = res.data.filter((a) => a.studentId === user.id);
-        setAchievements(myAchievements);
+        const res = await axios.get(
+          `http://localhost:5000/api/achievements/${user.id}`
+        );
+        setAchievements(res.data);
+        const points = res.data.reduce((sum, a) => sum + (a.points || 0), 0);
+        setTotalPoints(points);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching achievements:", err);
       }
-    }
-    fetchAchievements();
-  }, [user.id]);
-
-  // Dummy points calculation
-  const calculatePoints = (title, domain, description) => {
-    const lengthScore = Math.min(description.length / 50, 20); // longer description → more points
-    let domainScore = 0;
-    switch (domain) {
-      case "Project":
-        domainScore = 20;
-        break;
-      case "Hackathon":
-        domainScore = 25;
-        break;
-      case "Research Paper":
-        domainScore = 30;
-        break;
-      case "Internship":
-        domainScore = 15;
-        break;
-      case "Course":
-        domainScore = 10;
-        break;
-      case "Patent":
-        domainScore = 35;
-        break;
-      default:
-        domainScore = 10;
-    }
-    return Math.round(domainScore + lengthScore);
-  };
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const points = calculatePoints(form.title, form.domain, form.description);
-
-    const newAchievement = {
-      studentId: user.id,
-      title: form.title,
-      description: form.description,
-      domain: form.domain,
-      proofLink: form.proofLink,
-      points,
     };
+
+    if (user?.id) {
+      fetchAchievements();
+    }
+  }, [user]);
+
+  // Add achievement
+  const handleAddAchievement = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("link", link);
+    formData.append("userId", user.id);
+    if (file) {
+      formData.append("proofFile", file);
+    }
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/achievements",
-        newAchievement
+        "http://localhost:5000/api/achievements/add",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-      setAchievements([...achievements, res.data]);
-      setForm({ title: "", description: "", domain: "Project", proofLink: "" });
+      setAchievements((prev) => [...prev, res.data.achievement]);
+      setTotalPoints((prev) => prev + (res.data.achievement.points || 0));
+
+      // reset form
+      setTitle("");
+      setDescription("");
+      setLink("");
+      setFile(null);
     } catch (err) {
-      console.error(err);
-    }
+  if (err.response) {
+    console.error("Server responded with:", err.response.status, err.response.data);
+    alert(`Error: ${err.response.data.message || "Something went wrong"}`);
+  } else if (err.request) {
+    console.error("No response received:", err.request);
+  } else {
+    console.error("Error setting up request:", err.message);
+  }
+}
+
   };
 
-  const totalPoints = achievements.reduce((acc, a) => acc + a.points, 0);
-
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{user.name}'s Profile</h1>
         <button
@@ -98,58 +83,58 @@ export default function Profile() {
         </button>
       </div>
 
+      {/* User Info */}
       <div className="mb-6 space-y-1">
-        <p><strong>SRN:</strong> {user.srn}</p>
-        <p><strong>Class:</strong> {user.class}</p>
-        <p><strong>Year:</strong> {user.year}</p>
-        <p><strong>Department:</strong> {user.department}</p>
-        <p><strong>Branch:</strong> {user.branch}</p>
-        <p><strong>Total Points:</strong> {totalPoints}</p>
+        <p>
+          <strong>SRN:</strong> {user.srn}
+        </p>
+        <p>
+          <strong>Class:</strong> {user.class}
+        </p>
+        <p>
+          <strong>Year:</strong> {user.year}
+        </p>
+        <p>
+          <strong>Department:</strong> {user.department}
+        </p>
+        <p>
+          <strong>Branch:</strong> {user.branch}
+        </p>
+        <p>
+          <strong>Total Points:</strong> {totalPoints}
+        </p>
       </div>
 
-      <hr className="my-4" />
-
-      <h2 className="text-xl font-semibold mb-4">Add Achievement</h2>
-      <form onSubmit={handleSubmit} className="mb-6 space-y-3">
+      {/* Add Achievement */}
+      <h2 className="text-xl font-semibold mb-2">Add Achievement</h2>
+      <form onSubmit={handleAddAchievement} className="space-y-4 mb-6">
         <input
           type="text"
-          name="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
+          className="w-full border p-2 rounded"
           required
-          className="border p-2 w-full"
         />
         <textarea
-          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           placeholder="Description (max 1000 chars)"
-          value={form.description}
-          onChange={handleChange}
+          className="w-full border p-2 rounded"
           maxLength={1000}
           required
-          className="border p-2 w-full"
         />
-        <select
-          name="domain"
-          value={form.domain}
-          onChange={handleChange}
-          className="border p-2 w-full"
-        >
-          <option>Project</option>
-          <option>Hackathon</option>
-          <option>Research Paper</option>
-          <option>Internship</option>
-          <option>Course</option>
-          <option>Patent</option>
-        </select>
         <input
           type="text"
-          name="proofLink"
-          placeholder="GitHub / LinkedIn / Vercel / Certificate Link"
-          value={form.proofLink}
-          onChange={handleChange}
-          required
-          className="border p-2 w-full"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="GitHub / LinkedIn / Vercel / Certificate Link (optional)"
+          className="w-full border p-2 rounded"
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="w-full border p-2 rounded"
         />
         <button
           type="submit"
@@ -159,16 +144,39 @@ export default function Profile() {
         </button>
       </form>
 
-      <h2 className="text-xl font-semibold mb-4">My Achievements</h2>
+      {/* My Achievements */}
+      <h2 className="text-xl font-semibold mb-2">My Achievements</h2>
       {achievements.length === 0 ? (
         <p>No achievements added yet.</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {achievements.map((a) => (
-            <li key={a.id} className="border p-3 rounded">
-              <p><strong>{a.title}</strong> ({a.domain}) - {a.points} pts</p>
+            <li key={a.id} className="border p-4 rounded">
+              <h3 className="font-bold">{a.title}</h3>
               <p>{a.description}</p>
-              <p className="text-blue-600 underline">{a.proofLink}</p>
+              {a.proof && (
+                <div className="mt-2">
+                  {a.proof.startsWith("http") ? (
+                    <a
+                      href={a.proof}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      {a.proof}
+                    </a>
+                  ) : (
+                    <img
+                      src={`http://localhost:5000${a.proof}`}
+                      alt="Proof"
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                  )}
+                </div>
+              )}
+              <p className="mt-2 text-sm text-gray-600">
+                Points: {a.points || 0}
+              </p>
             </li>
           ))}
         </ul>
