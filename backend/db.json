@@ -1,30 +1,18 @@
 {
   "users": [
     {
-      "id": 999,
-      "username": "demostudent",
-      "password": "demostudentpassword",
-      "role": "student",
-      "name": "Demo Student",
-      "srn": "2025CSEDEMO",
-      "class": "CSE-A",
-      "year": 2,
-      "branch": "CSE",
-      "department": "Engineering"
-    },
-    {
       "id": 1,
       "srn": "2025CSE001",
       "username": "student1",
       "password": "pass123",
       "role": "student",
-      "name": "Preeti Sharma",
+      "name": "Preeti Kapoor",
       "class": "B.Tech",
       "year": 2,
       "department": "CSE",
-      "branch": "CSE",
+      "branch": "AI ML",
       "avatar": "dog.jpg",
-      "totalPoints": 20
+      "totalPoints": 30
     },
     {
       "id": 2,
@@ -758,6 +746,15 @@
       "domain": "Research Paper",
       "proof": "https://ieeexplore.ieee.org/document/1234567",
       "points": 40
+    },
+    {
+      "id": 1757187586529,
+      "userId": 1,
+      "title": "oci generative ai course",
+      "description": "Oracle offers the Oracle Cloud Infrastructure (OCI) Generative AI Professional certification, designed for technical professionals who want to demonstrate expertise in building and deploying generative AI solutions on the OCI platform. ",
+      "proof": "/uploads/1757187586512.jpg",
+      "points": 10,
+      "createdAt": "2025-09-06T19:39:46.529Z"
     }
   ],
   "notifications": []

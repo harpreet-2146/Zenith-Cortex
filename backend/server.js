@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const bodyParser = require("body-parser");
 const resumeRoutes = require("./routes/resume");
 const quizRoutes = require("./routes/quiz");
@@ -15,7 +16,7 @@ app.use(cors());
 app.use(express.json()); // for JSON requests
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true })); // ✅ handles form submissions
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 
 // Routes
 app.use("/api/resume", resumeRoutes);
