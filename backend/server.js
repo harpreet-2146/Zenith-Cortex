@@ -8,6 +8,7 @@ const quizRoutes = require("./routes/quiz");
 //const profileRoutes = require("./routes/profile"); // removed .js for consistency
 const authRoutes = require("./routes/auth");
 const achievementsRoutes = require("./routes/achievements");
+const leaderboardRoutes=require("./routes/leaderboard");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/quiz", quizRoutes);
 //app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/achievements", achievementsRoutes);
+app.use("/api/leaderboard",leaderboardRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
