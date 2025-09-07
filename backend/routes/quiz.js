@@ -71,7 +71,7 @@ Rules:
         prompt,
         schema: quizSchema,
         temperature: 0,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 4096,
       });
     } catch (err) {
       console.error("Vertex JSON error (quiz):", err?.message || err);
