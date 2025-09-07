@@ -9,20 +9,18 @@ export default function Leaderboard() {
     year: "",
   });
 
-  // Fetch leaderboard
-  const fetchLeaderboard = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/leaderboard", {
-        params: filters,
-      });
-      setLeaderboard(res.data);
-    } catch (err) {
-      console.error("Error fetching leaderboard:", err);
-      setLeaderboard([]);
-    }
-  };
-
   useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/leaderboard", {
+          params: filters,
+        });
+        setLeaderboard(res.data);
+      } catch (err) {
+        console.error("Error fetching leaderboard:", err);
+        setLeaderboard([]);
+      }
+    };
     fetchLeaderboard();
   }, [filters]);
 
@@ -51,8 +49,9 @@ export default function Leaderboard() {
         >
           <option value="">All Departments</option>
           <option value="CSE">CSE</option>
-          <option value="ECE">ECE</option>
           <option value="ME">ME</option>
+          <option value="ECE">ECE</option>
+          
         </select>
 
         <select
@@ -63,8 +62,14 @@ export default function Leaderboard() {
         >
           <option value="">All Branches</option>
           <option value="CSE">CSE</option>
-          <option value="Mechanical">Mechanical</option>
-          <option value="ECE">ECE</option>
+          <option value="AIML">AI ML</option>
+          <option value="AIDS">AI DS</option>
+          <option value="IOT">IOT</option>
+          <option value="Communication Networks">Communitcation networks</option>
+          <option value="Robotics">Robotics</option>
+          <option value="Aerospace">Aerospace</option>
+          <option value="Mechatronics">Mechatronics</option>
+          <option value="VLSI designing">VLSI Designing</option>
         </select>
 
         <select
