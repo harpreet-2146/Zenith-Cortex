@@ -14,6 +14,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
         ❌
       </button>
       <ul className="mt-10 space-y-6">
+        <li><Link to="/home" onClick={toggleSidebar}>🏠 Home</Link></li>
         <li><Link to="/resume" onClick={toggleSidebar}>📄 Resume</Link></li>
         <li><Link to="/profile" onClick={toggleSidebar}>👤 Profile</Link></li>
         <li><Link to="/quiz" onClick={toggleSidebar}>📝 Quiz</Link></li>
