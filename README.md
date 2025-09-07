@@ -9,9 +9,9 @@ backend>
      config>
            vertex-key.json
      routes>
+           achievements.js
            auth.js
            leaderboard.js
-           profile.js
            quiz.js
            resume.js
      utils>
@@ -43,4 +43,4 @@ frontend>
        Profile.jsx
        Quiz.jsx
        Resume.jsx
-    App.jsx                                    
+    App.jsx
