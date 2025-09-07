@@ -62,9 +62,9 @@ export default function Leaderboard() {
           className="border p-2 rounded"
         >
           <option value="">All Branches</option>
-          <option value="AI ML">AI ML</option>
-          <option value="DS">DS</option>
-          <option value="Cybersecurity">Cybersecurity</option>
+          <option value="CSE">CSE</option>
+          <option value="Mechanical">Mechanical</option>
+          <option value="ECE">ECE</option>
         </select>
 
         <select
