@@ -10,7 +10,7 @@ const homeRoutes = require("./routes/home");
 const authRoutes = require("./routes/auth");
 const achievementsRoutes = require("./routes/achievements");
 const leaderboardRoutes=require("./routes/leaderboard");
-
+const searchRoutes = require("./routes/search");
 const app = express();
 
 // Middleware
@@ -24,6 +24,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/resume", resumeRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/home", homeRoutes);
+app.use("/api/search", searchRoutes);
 //app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/achievements", achievementsRoutes);
