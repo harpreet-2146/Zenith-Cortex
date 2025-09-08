@@ -712,6 +712,33 @@
       "points": 15
     },
     {
+      "id": 6,
+      "studentId": 4,
+      "title": "Data Science Bootcamp",
+      "description": "Completed a 6-week intensive bootcamp on data science covering Python, Pandas, and basic ML models.",
+      "domain": "Course",
+      "proof": "certificate_datascience.pdf",
+      "points": 25
+    },
+    {
+      "id": 7,
+      "studentId": 5,
+      "title": "Open Source Contributor",
+      "description": "Contributed bug fixes and documentation updates to a popular open-source Node.js project.",
+      "domain": "Open Source",
+      "proof": "https://github.com/student5/contributions",
+      "points": 35
+    },
+    {
+      "id": 8,
+      "studentId": 6,
+      "title": "Math Olympiad Finalist",
+      "description": "Reached the national finals in the Indian Math Olympiad representing the state team.",
+      "domain": "Competition",
+      "proof": "math_olympiad_certificate.jpg",
+      "points": 40
+    },
+    {
       "id": 2,
       "studentId": 1,
       "title": "Local Hackathon Winner",
