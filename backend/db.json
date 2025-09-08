@@ -791,6 +791,249 @@
       "proof": null,
       "points": 10,
       "createdAt": "2025-09-06T22:55:20.312Z"
+    },
+    {
+      "id": 9,
+      "studentId": 7,
+      "title": "Robotics Workshop",
+      "description": "Built a line-following robot using Arduino and infrared sensors during a college robotics workshop.",
+      "domain": "Workshop",
+      "proof": "robotics_workshop_certificate.pdf",
+      "points": 20
+    },
+    {
+      "id": 10,
+      "studentId": 8,
+      "title": "Cloud Fundamentals Certification",
+      "description": "Earned AWS Cloud Practitioner certification showcasing understanding of core AWS services.",
+      "domain": "Certification",
+      "proof": "https://aws.amazon.com/certification",
+      "points": 25
+    },
+    {
+      "id": 11,
+      "studentId": 9,
+      "title": "Hackathon Runner-up",
+      "description": "Secured 2nd place at state-level hackathon by creating a mental health chatbot.",
+      "domain": "Hackathon",
+      "proof": "hackathon_runnerup.pdf",
+      "points": 28
+    },
+    {
+      "id": 12,
+      "studentId": 10,
+      "title": "Cybersecurity Workshop",
+      "description": "Attended 3-day ethical hacking and cybersecurity awareness workshop.",
+      "domain": "Workshop",
+      "proof": "cybersecurity_workshop.jpg",
+      "points": 18
+    },
+    {
+      "id": 13,
+      "studentId": 11,
+      "title": "Python Automation Project",
+      "description": "Developed a Python script to automate Excel reporting for college administration.",
+      "domain": "Project",
+      "proof": "https://github.com/student11/automation",
+      "points": 22
+    },
+    {
+      "id": 14,
+      "studentId": 12,
+      "title": "UI/UX Design Challenge Winner",
+      "description": "Won first place in UI/UX designathon by creating a mobile app prototype for e-learning.",
+      "domain": "Competition",
+      "proof": "designathon_certificate.pdf",
+      "points": 32
+    },
+    {
+      "id": 15,
+      "studentId": 13,
+      "title": "AI Research Internship",
+      "description": "Interned at a research lab focusing on computer vision object detection models.",
+      "domain": "Internship",
+      "proof": "linkedin.com/in/student13",
+      "points": 35
+    },
+    {
+      "id": 16,
+      "studentId": 14,
+      "title": "Kaggle Competition Participant",
+      "description": "Participated in Kaggle Titanic competition and achieved top 20% leaderboard rank.",
+      "domain": "Competition",
+      "proof": "https://kaggle.com/student14",
+      "points": 27
+    },
+    {
+      "id": 17,
+      "studentId": 15,
+      "title": "Flutter Mobile App",
+      "description": "Built a cross-platform mobile app for expense tracking using Flutter and Firebase.",
+      "domain": "Project",
+      "proof": "https://github.com/student15/flutter-expense-app",
+      "points": 30
+    },
+    {
+      "id": 18,
+      "studentId": 7,
+      "title": "Blockchain Bootcamp",
+      "description": "Completed blockchain bootcamp building smart contracts on Ethereum.",
+      "domain": "Course",
+      "proof": "blockchain_bootcamp_certificate.pdf",
+      "points": 26
+    },
+    {
+      "id": 19,
+      "studentId": 8,
+      "title": "ML Research Paper",
+      "description": "Co-authored research paper on supervised learning models published in Springer.",
+      "domain": "Research Paper",
+      "proof": "https://springer.com/student8-ml-paper",
+      "points": 40
+    },
+    {
+      "id": 20,
+      "studentId": 9,
+      "title": "React Native App",
+      "description": "Developed a fitness tracker mobile app using React Native.",
+      "domain": "Project",
+      "proof": "https://github.com/student9/fitness-app",
+      "points": 28
+    },
+    {
+      "id": 21,
+      "studentId": 10,
+      "title": "Cybersecurity Capture the Flag",
+      "description": "Ranked in top 5 teams in a national-level CTF competition.",
+      "domain": "Competition",
+      "proof": "ctf_certificate.pdf",
+      "points": 35
+    },
+    {
+      "id": 22,
+      "studentId": 11,
+      "title": "IoT Smart Home Project",
+      "description": "Created IoT-based smart home automation project with Raspberry Pi and MQTT.",
+      "domain": "Project",
+      "proof": "https://github.com/student11/iot-smart-home",
+      "points": 34
+    },
+    {
+      "id": 23,
+      "studentId": 12,
+      "title": "Hackathon Winner",
+      "description": "Won 1st place in regional hackathon building an AI-powered resume parser.",
+      "domain": "Hackathon",
+      "proof": "hackathon_winner_resumeparser.pdf",
+      "points": 38
+    },
+    {
+      "id": 24,
+      "studentId": 13,
+      "title": "Deep Learning Course",
+      "description": "Completed Deep Learning specialization from Coursera.",
+      "domain": "Course",
+      "proof": "coursera_dl_certificate.pdf",
+      "points": 30
+    },
+    {
+      "id": 25,
+      "studentId": 14,
+      "title": "Tech Blogger",
+      "description": "Published 10+ blog posts on Medium about JavaScript, AI, and career tips.",
+      "domain": "Other",
+      "proof": "https://medium.com/@student14",
+      "points": 20
+    },
+    {
+      "id": 26,
+      "studentId": 15,
+      "title": "Startup Internship",
+      "description": "Worked as frontend intern at a fintech startup for 3 months.",
+      "domain": "Internship",
+      "proof": "linkedin.com/in/student15",
+      "points": 32
+    },
+    {
+      "id": 27,
+      "studentId": 7,
+      "title": "AI Club Core Member",
+      "description": "Served as AI Club core team member organizing ML study jams.",
+      "domain": "Extra-Curricular",
+      "proof": "ai_club_certificate.pdf",
+      "points": 18
+    },
+    {
+      "id": 28,
+      "studentId": 8,
+      "title": "Research Paper on NLP",
+      "description": "Published paper on sentiment analysis in international conference proceedings.",
+      "domain": "Research Paper",
+      "proof": "https://icmlconf.com/student8-nlp",
+      "points": 42
+    },
+    {
+      "id": 29,
+      "studentId": 9,
+      "title": "AWS Internship",
+      "description": "Interned at AWS partner company focusing on cloud migrations.",
+      "domain": "Internship",
+      "proof": "linkedin.com/in/student9",
+      "points": 36
+    },
+    {
+      "id": 30,
+      "studentId": 10,
+      "title": "Robotics National Finalist",
+      "description": "National finalist in robotics championship with autonomous navigation bot.",
+      "domain": "Competition",
+      "proof": "robotics_finalist_certificate.pdf",
+      "points": 45
+    },
+    {
+      "id": 31,
+      "studentId": 11,
+      "title": "Portfolio Redesign",
+      "description": "Redesigned personal portfolio website with TailwindCSS and animations.",
+      "domain": "Project",
+      "proof": "https://github.com/student11/portfolio",
+      "points": 19
+    },
+    {
+      "id": 32,
+      "studentId": 12,
+      "title": "Oracle Cloud Certification",
+      "description": "Achieved Oracle Cloud Infrastructure Foundations certification.",
+      "domain": "Certification",
+      "proof": "oci_foundations_certificate.pdf",
+      "points": 24
+    },
+    {
+      "id": 33,
+      "studentId": 13,
+      "title": "AI for Social Good Project",
+      "description": "Built AI model to classify plastic waste images for recycling drive.",
+      "domain": "Project",
+      "proof": "https://github.com/student13/ai-social-good",
+      "points": 37
+    },
+    {
+      "id": 34,
+      "studentId": 14,
+      "title": "Startup Pitch Winner",
+      "description": "Won college startup pitch competition presenting an EdTech idea.",
+      "domain": "Competition",
+      "proof": "startup_pitch_winner.pdf",
+      "points": 29
+    },
+    {
+      "id": 35,
+      "studentId": 15,
+      "title": "AI Course Mentor",
+      "description": "Mentored juniors in completing Andrew Ng’s ML course.",
+      "domain": "Other",
+      "proof": "mentor_certificate.pdf",
+      "points": 21
     }
   ],
   "notifications": []
