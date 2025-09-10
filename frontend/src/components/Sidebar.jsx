@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
-  const role = localStorage.getItem("role");
+  const { user } = useAuth();
+  const role = user?.role || null;
 
   return (
     <aside
@@ -17,35 +19,41 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       </button>
 
       <ul className="mt-10 space-y-6">
-        {/* Home (same for all) */}
-        <li>
-          <Link to="/home" onClick={toggleSidebar}>🏠 Home</Link>
-        </li>
-
-        {/* Student-only links */}
+        {/* STUDENT MENU */}
         {role === "student" && (
           <>
+            <li><Link to="/home" onClick={toggleSidebar}>🏠 Home</Link></li>
             <li><Link to="/resume" onClick={toggleSidebar}>📄 Resume</Link></li>
             <li><Link to="/profile" onClick={toggleSidebar}>👤 Profile</Link></li>
             <li><Link to="/mentorhub" onClick={toggleSidebar}>🤝 Mentor Hub</Link></li>
             <li><Link to="/quiz" onClick={toggleSidebar}>📝 Student Quiz</Link></li>
+            <li><Link to="/leaderboard" onClick={toggleSidebar}>🏆 Leaderboard</Link></li>
           </>
         )}
 
-        {/* Recruiter-only links */}
+        {/* RECRUITER MENU */}
         {role === "recruiter" && (
           <>
+            <li><Link to="/rechome" onClick={toggleSidebar}>🏠 Recruiter Home</Link></li>
             <li><Link to="/recquiz" onClick={toggleSidebar}>📝 Recruiter Quiz</Link></li>
+            <li><Link to="/leaderboard" onClick={toggleSidebar}>🏆 Leaderboard</Link></li>
             <li><Link to="/recprofile" onClick={toggleSidebar}>👤 Recruiter Profile</Link></li>
           </>
         )}
 
-        {/* Shared */}
-        <li><Link to="/leaderboard" onClick={toggleSidebar}>🏆 Leaderboard</Link></li>
+        {/* MENTOR/FACULTY MENU (if needed) */}
+        {(role === "mentor" || role === "faculty") && (
+          <>
+            <li><Link to="/mentorhub" onClick={toggleSidebar}>🤝 Mentor Hub</Link></li>
+            <li><Link to="/profile" onClick={toggleSidebar}>👤 Profile</Link></li>
+            <li><Link to="/leaderboard" onClick={toggleSidebar}>🏆 Leaderboard</Link></li>
+          </>
+        )}
       </ul>
     </aside>
   );
 }
+
 
 
 

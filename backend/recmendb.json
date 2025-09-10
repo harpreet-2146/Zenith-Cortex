@@ -5,7 +5,7 @@
       "username": "recruiter1",
       "password": "pass123",
       "role": "recruiter",
-      "name": "Recruiter One",
+      "name": "Pankaj Tripati",
       "company": "TechCorp"
     },
     {
@@ -13,7 +13,7 @@
       "username": "recruiter2",
       "password": "pass456",
       "role": "recruiter",
-      "name": "Recruiter Two",
+      "name": "Divya Bharti",
       "company": "InnoSoft"
     }
   ],
