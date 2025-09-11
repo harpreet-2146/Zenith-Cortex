@@ -41,14 +41,16 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           </>
         )}
 
-        {/* MENTOR/FACULTY MENU (if needed) */}
-        {(role === "mentor" || role === "faculty") && (
-          <>
-            <li><Link to="/mentorhub" onClick={toggleSidebar}>🤝 Mentor Hub</Link></li>
-            <li><Link to="/profile" onClick={toggleSidebar}>👤 Profile</Link></li>
-            <li><Link to="/leaderboard" onClick={toggleSidebar}>🏆 Leaderboard</Link></li>
-          </>
-        )}
+        {/* MENTOR/FACULTY MENU */}
+{(role === "mentor" || role === "faculty") && (
+  <>
+    <li><Link to="/mentorhome" onClick={toggleSidebar}>🏠 Mentor Dashboard</Link></li>
+    <li><Link to="/mentorprofile" onClick={toggleSidebar}>👤 Mentor Profile</Link></li>
+    <li><Link to="/mentoropportunities" onClick={toggleSidebar}>🎯 Opportunities</Link></li>
+    <li><Link to="/leaderboard" onClick={toggleSidebar}>🏆 Leaderboard</Link></li>
+  </>
+)}
+
       </ul>
     </aside>
   );
