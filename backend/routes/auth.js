@@ -1,36 +1,44 @@
 const express = require("express");
+const db = require("../utils/db");
 const router = express.Router();
 
-const studentDB = require("../utils/db");       // db.json for students
-const recmenDB = require("../utils/recmendb");  // recmendb.json for recruiters/mentors
-
+// POST /api/auth/login
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  // Students
-  const student = studentDB.get("students").find({ username, password }).value();
-  if (student) {
-    return res.json({ ...student, role: "student" });
+  // check in students (users)
+  let user = db.get("users").find({ username, password }).value();
+
+  // if not found, check in recruiters
+  if (!user) {
+    user = db.get("recruiters").find({ username, password }).value();
   }
 
-  // Recruiters
-  const recruiter = recmenDB.get("recruiters").find({ username, password }).value();
-  if (recruiter) {
-    return res.json({ ...recruiter, role: "recruiter" });
+  // if not found, check in mentors
+  if (!user) {
+    user = db.get("mentors").find({ username, password }).value();
   }
 
-  // Mentors
-  const mentor = recmenDB.get("mentors").find({ username, password }).value();
-  if (mentor) {
-    return res.json({ ...mentor, role: "mentor" });
+  if (!user) {
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  // Fail
-  res.status(401).json({ message: "Invalid credentials" });
+  // Return the full user object
+  res.json({
+    id: user.id,
+    username: user.username,
+    role: user.role,  // "student", "recruiter", "faculty"
+    name: user.name,
+    srn: user.srn || null,
+    class: user.class || null,
+    year: user.year || null,
+    branch: user.branch || null,
+    department: user.department || null,
+    company: user.company || null
+  });
 });
 
 module.exports = router;
-
 
 
 // // backend/routes/auth.js only student login

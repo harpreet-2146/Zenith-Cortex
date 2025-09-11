@@ -11,7 +11,9 @@ backend>
      routes>
            achievements.js
            auth.js
+           home.js
            leaderboard.js
+           search.js
            quiz.js
            resume.js
      utils>
@@ -42,5 +44,8 @@ frontend>
        MentorHub.jsx
        Profile.jsx
        Quiz.jsx
+       RecHome.jsx
+       RecProfile.jsx
+       RecQuiz.jsx
        Resume.jsx
     App.jsx
