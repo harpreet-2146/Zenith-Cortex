@@ -12,6 +12,7 @@ const authRoutes = require("./routes/auth");
 const achievementsRoutes = require("./routes/achievements");
 const leaderboardRoutes=require("./routes/leaderboard");
 const searchRoutes = require("./routes/search");
+const opportunitiesRoutes = require("./routes/opportunities");
 const app = express();
 
 // Middleware
@@ -30,6 +31,6 @@ app.use("/api", searchRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/achievements", achievementsRoutes);
 app.use("/api/leaderboard",leaderboardRoutes);
-
+app.use("/api/opportunities", opportunitiesRoutes);
 const PORT = 5000;
 app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));

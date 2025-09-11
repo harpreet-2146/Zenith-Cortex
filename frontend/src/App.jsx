@@ -17,6 +17,11 @@ import RecHome from "./pages/RecHome";
 import RecQuiz from "./pages/RecQuiz";
 import RecProfile from "./pages/RecProfile";
 
+//Mentor Pages
+import MentorHome from "./pages/Mentorhome";
+import MentorOpportunities from "./pages/MentorOpportunities";
+import MentorProfile from "./pages/MentorProfile";
+
 // Shared
 import Login from "./pages/Login";
 
@@ -77,6 +82,12 @@ export default function App() {
             <Route path="/rechome" element={<RoleRoute allowedRoles={["recruiter"]}><RecHome /></RoleRoute>} />
             <Route path="/recquiz" element={<RoleRoute allowedRoles={["recruiter"]}><RecQuiz /></RoleRoute>} />
             <Route path="/recprofile" element={<RoleRoute allowedRoles={["recruiter"]}><RecProfile /></RoleRoute>} />
+            
+            {/* Mentor routes */}
+            <Route path="/mentorhome" element={<RoleRoute allowedRoles={["mentor","faculty"]}><MentorHome /></RoleRoute>} />
+            <Route path="/mentorprofile" element={<RoleRoute allowedRoles={["mentor","faculty"]}><MentorProfile /></RoleRoute>} />
+            <Route path="/mentoropportunities" element={<RoleRoute allowedRoles={["mentor","faculty"]}><MentorOpportunities /></RoleRoute>} />
+
 
             {/* Shared */}
             <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
