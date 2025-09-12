@@ -22,6 +22,7 @@ import MentorHome from "./pages/Mentorhome";
 import MentorOpportunities from "./pages/MentorOpportunities";
 import MentorProfile from "./pages/MentorProfile";
 
+
 // Shared
 import Login from "./pages/Login";
 
@@ -87,7 +88,7 @@ export default function App() {
             <Route path="/mentorhome" element={<RoleRoute allowedRoles={["mentor","faculty"]}><MentorHome /></RoleRoute>} />
             <Route path="/mentorprofile" element={<RoleRoute allowedRoles={["mentor","faculty"]}><MentorProfile /></RoleRoute>} />
             <Route path="/mentoropportunities" element={<RoleRoute allowedRoles={["mentor","faculty"]}><MentorOpportunities /></RoleRoute>} />
-
+            <Route path="/mentorhub" element={<RoleRoute allowedRoles={["student","mentor","faculty"]}><MentorHub /></RoleRoute>} />
 
             {/* Shared */}
             <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
