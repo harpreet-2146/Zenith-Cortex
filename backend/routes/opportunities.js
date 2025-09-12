@@ -8,15 +8,55 @@ const adapter = new FileSync("db.json");
 const db = low(adapter);
 
 // Ensure defaults
-db.defaults({ opportunities: [] }).write();
+db.defaults({ opportunities: [], students: [] }).write();
 
-// GET all opportunities
+/**
+ * Helper to normalize date + time into ISO string
+ */
+function normalizeDate(date, time) {
+  if (!date) return null;
+
+  // If already ISO
+  const tryDate = new Date(date);
+  if (!isNaN(tryDate.getTime())) return tryDate.toISOString();
+
+  // If given as "2025-12-20" and time separate
+  if (time) {
+    const combined = new Date(`${date} ${time}`);
+    if (!isNaN(combined.getTime())) return combined.toISOString();
+  }
+
+  return null;
+}
+
+/**
+ * GET all opportunities
+ * Sorted by event date (latest first)
+ */
 router.get("/", (req, res) => {
   const opportunities = db.get("opportunities").value();
-  res.json(opportunities);
+
+  const normalized = opportunities.map((opp) => {
+    return {
+      ...opp,
+      _sortDate: normalizeDate(opp.date, opp.time), // temp field
+    };
+  });
+
+  const sorted = normalized
+    .sort((a, b) => {
+      const dA = a._sortDate ? new Date(a._sortDate) : 0;
+      const dB = b._sortDate ? new Date(b._sortDate) : 0;
+      return dB - dA; // latest first
+    })
+    .map(({ _sortDate, ...rest }) => rest); // drop temp
+
+  res.json(sorted);
 });
 
-// POST new opportunity
+/**
+ * POST new opportunity
+ */
 router.post("/", (req, res) => {
   const {
     title,
@@ -34,110 +74,34 @@ router.post("/", (req, res) => {
     return res.status(400).json({ error: "Title and description are required" });
   }
 
+  // Normalize to ISO
+  const isoDate = normalizeDate(date, time);
+
+  // Auto fetch mentor name if mentorId is given
+  let mentorName = postedBy || "Unknown Mentor";
+  if (mentorId) {
+    const mentor = db.get("students").find({ id: mentorId }).value();
+    if (mentor && mentor.name) {
+      mentorName = mentor.name;
+    }
+  }
+
   const newOpportunity = {
     id: Date.now(),
     title,
     description,
-    type: type || "General", // ✅ save type
-    venue: venue || "TBA",   // ✅ save venue
-    date: date || "",        // ✅ save date
-    time: time || "",        // ✅ save time
+    type: type || "General",
+    venue: venue || "TBA",
+    date: isoDate || date || "", // always something valid
+    time: time || "",
     registrationLink: registrationLink || "",
-    postedBy: postedBy || "Unknown Mentor", // ✅ show professor name
+    postedBy: mentorName,
     mentorId: mentorId || null,
   };
 
   db.get("opportunities").push(newOpportunity).write();
+
   res.status(201).json(newOpportunity);
 });
 
 module.exports = router;
-
-
-// // backend/routes/opportunities.js
-// const express = require("express");
-// const router = express.Router();
-
-// const low = require("lowdb");
-// const FileSync = require("lowdb/adapters/FileSync");
-
-// // Setup lowdb v1 with FileSync
-// const adapter = new FileSync("db.json");
-// const db = low(adapter);
-
-// // Default structure if not already present
-// db.defaults({ opportunities: [] }).write();
-
-// /**
-//  * GET all opportunities
-//  * Used in Student's MentorHub.jsx to fetch & display opportunities
-//  */
-// router.get("/", (req, res) => {
-//   try {
-//     const opportunities = db.get("opportunities").value();
-//     res.json(opportunities);
-//   } catch (err) {
-//     res.status(500).json({ error: "Error fetching opportunities" });
-//   }
-// });
-
-// /**
-//  * POST a new opportunity
-//  * Used in MentorOpportunities.jsx to create new hackathons/workshops/etc.
-//  */
-// router.post("/", (req, res) => {
-//   try {
-//     const { title, description, type, venue, date, registrationLink } = req.body;
-
-//     if (!title || !description || !type || !venue || !date || !registrationLink) {
-//       return res.status(400).json({ error: "All fields are required" });
-//     }
-
-//     const newOpportunity = {
-//       id: Date.now().toString(), // unique ID
-//       title,
-//       description,
-//       type, // e.g. "Hackathon", "Workshop", "Conference"
-//       venue,
-//       date,
-//       registrationLink,
-//       createdAt: new Date().toISOString(),
-//     };
-
-//     db.get("opportunities").push(newOpportunity).write();
-
-//     res.status(201).json(newOpportunity);
-//   } catch (err) {
-//     res.status(500).json({ error: "Error adding opportunity" });
-//   }
-// });
-
-// module.exports = router;
-
-
-// // backend/routes/opportunities.js
-// const express = require("express");
-// const db = require("../utils/db");
-// const router = express.Router();
-
-// // GET all opportunities
-// router.get("/", (req, res) => {
-//   const opps = db.get("opportunities").value() || [];
-//   res.json(opps);
-// });
-
-// // POST new opportunity
-// router.post("/", (req, res) => {
-//   const { title, description, mentorId, mentorName } = req.body;
-//   if (!title || !description || !mentorId) {
-//     return res.status(400).json({ message: "Missing required fields" });
-//   }
-
-//   const id = Date.now();
-//   const newOpp = { id, title, description, mentorId, mentorName };
-
-//   db.get("opportunities").push(newOpp).write();
-//   res.status(201).json(newOpp);
-// });
-
-// module.exports = router;

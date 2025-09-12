@@ -1143,7 +1143,7 @@
       "venue": "Bangalore, India",
       "date": "2025-12-20",
       "time": "10:00 AM",
-      "postedBy": "mentor1",
+      "postedBy": "Dr. Arjun Mehta",
       "description": "National-level hackathon where students solve real-world problems provided by various ministries.",
       "registrationLink": "https://sih.gov.in/register"
     },
@@ -1154,7 +1154,7 @@
       "venue": "Reva University, Seminar Hall",
       "date": "2025-10-15",
       "time": "02:00 PM",
-      "postedBy": "mentor2",
+      "postedBy": "Prof. Neha Sharma",
       "description": "Hands-on workshop on neural networks, CNNs, and deep learning applications.",
       "registrationLink": "https://example.com/ai-workshop"
     },
@@ -1165,7 +1165,7 @@
       "venue": "IISc Bangalore",
       "date": "2025-11-05",
       "time": "09:30 AM",
-      "postedBy": "mentor3",
+      "postedBy": "Dr. Rahul Iyer",
       "description": "Learn ethical hacking, penetration testing, and security tools in this 2-day bootcamp.",
       "registrationLink": "https://example.com/cyber-bootcamp"
     },
@@ -1176,7 +1176,7 @@
       "venue": "IIT Delhi Auditorium",
       "date": "2025-10-22",
       "time": "11:00 AM",
-      "postedBy": "mentor4",
+      "postedBy": "Prof. Kavita Rao",
       "description": "An industry expert shares insights on quantum computing advancements and career opportunities.",
       "registrationLink": "https://example.com/quantum-talk"
     },
@@ -1187,7 +1187,7 @@
       "venue": "NASSCOM Startup Hub, Bangalore",
       "date": "2025-11-12",
       "time": "10:00 AM",
-      "postedBy": "mentor5",
+      "postedBy": "Dr. Sneha Gupta",
       "description": "Internship and mentorship opportunities for students with innovative startup ideas.",
       "registrationLink": "https://example.com/startup-drive"
     },
@@ -1198,7 +1198,7 @@
       "venue": "Hyderabad International Convention Centre",
       "date": "2025-12-02",
       "time": "09:00 AM",
-      "postedBy": "mentor6",
+      "postedBy": "Prof. Anil Kapoor",
       "description": "Empowering women in technology through panel discussions, workshops, and networking sessions.",
       "registrationLink": "https://example.com/women-in-tech"
     },
@@ -1209,10 +1209,23 @@
       "venue": "Online (Google Meet)",
       "date": "2025-10-28",
       "time": "07:00 PM",
-      "postedBy": "mentor7",
+      "postedBy": "Dr. Priya Menon",
       "description": "A live online workshop covering GCP basics, Vertex AI, and real-time cloud deployments.",
       "registrationLink": "https://example.com/cloud-workshop"
+    },
+    {
+      "id": 1757645896670,
+      "title": "Agritech Hackathon 2025",
+      "description": "Challenges often target critical issues in agriculture such as climate change, water scarcity, food supply chain inefficiencies, post-harvest losses, and access to financial services.\n      ",
+      "type": "Hackathon",
+      "venue": "Alan Turing Hall",
+      "date": "2025-10-10",
+      "time": "10:30",
+      "registrationLink": "https://example.com/agritech",
+      "postedBy": "Dr. Arjun Mehta",
+      "mentorId": 1
     }
   ],
-  "notifications": []
+  "notifications": [],
+  "students": []
 }
