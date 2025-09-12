@@ -12,7 +12,7 @@
       "department": "CSE",
       "branch": "AIML",
       "avatar": "dog.jpg",
-      "totalPoints": 20
+      "totalPoints": 0
     },
     {
       "id": 2,
@@ -1133,6 +1133,85 @@
       "domain": "Other",
       "proof": "mentor_certificate.pdf",
       "points": 21
+    }
+  ],
+  "opportunities": [
+    {
+      "id": 1,
+      "title": "Smart India Hackathon 2025",
+      "type": "Hackathon",
+      "venue": "Bangalore, India",
+      "date": "2025-12-20",
+      "time": "10:00 AM",
+      "postedBy": "mentor1",
+      "description": "National-level hackathon where students solve real-world problems provided by various ministries.",
+      "registrationLink": "https://sih.gov.in/register"
+    },
+    {
+      "id": 2,
+      "title": "AI & Deep Learning Workshop",
+      "type": "Workshop",
+      "venue": "Reva University, Seminar Hall",
+      "date": "2025-10-15",
+      "time": "02:00 PM",
+      "postedBy": "mentor2",
+      "description": "Hands-on workshop on neural networks, CNNs, and deep learning applications.",
+      "registrationLink": "https://example.com/ai-workshop"
+    },
+    {
+      "id": 3,
+      "title": "Cybersecurity Bootcamp",
+      "type": "Workshop",
+      "venue": "IISc Bangalore",
+      "date": "2025-11-05",
+      "time": "09:30 AM",
+      "postedBy": "mentor3",
+      "description": "Learn ethical hacking, penetration testing, and security tools in this 2-day bootcamp.",
+      "registrationLink": "https://example.com/cyber-bootcamp"
+    },
+    {
+      "id": 4,
+      "title": "TechTalk: The Future of Quantum Computing",
+      "type": "Seminar",
+      "venue": "IIT Delhi Auditorium",
+      "date": "2025-10-22",
+      "time": "11:00 AM",
+      "postedBy": "mentor4",
+      "description": "An industry expert shares insights on quantum computing advancements and career opportunities.",
+      "registrationLink": "https://example.com/quantum-talk"
+    },
+    {
+      "id": 5,
+      "title": "Startup Incubation Drive",
+      "type": "Internship",
+      "venue": "NASSCOM Startup Hub, Bangalore",
+      "date": "2025-11-12",
+      "time": "10:00 AM",
+      "postedBy": "mentor5",
+      "description": "Internship and mentorship opportunities for students with innovative startup ideas.",
+      "registrationLink": "https://example.com/startup-drive"
+    },
+    {
+      "id": 6,
+      "title": "Women in Tech: Leadership Conference",
+      "type": "Conference",
+      "venue": "Hyderabad International Convention Centre",
+      "date": "2025-12-02",
+      "time": "09:00 AM",
+      "postedBy": "mentor6",
+      "description": "Empowering women in technology through panel discussions, workshops, and networking sessions.",
+      "registrationLink": "https://example.com/women-in-tech"
+    },
+    {
+      "id": 7,
+      "title": "Cloud Computing with Google Cloud",
+      "type": "Workshop",
+      "venue": "Online (Google Meet)",
+      "date": "2025-10-28",
+      "time": "07:00 PM",
+      "postedBy": "mentor7",
+      "description": "A live online workshop covering GCP basics, Vertex AI, and real-time cloud deployments.",
+      "registrationLink": "https://example.com/cloud-workshop"
     }
   ],
   "notifications": []
