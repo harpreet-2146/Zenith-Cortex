@@ -13,6 +13,7 @@ backend>
            auth.js
            home.js
            leaderboard.js
+           opportunities.js
            search.js
            quiz.js
            resume.js
@@ -42,6 +43,9 @@ frontend>
        Leaderboard.jsx
        Login.jsx
        MentorHub.jsx
+       MentorHub.jsx
+       MentorOpportunities.jsx
+       MentorProfile.jsx
        Profile.jsx
        Quiz.jsx
        RecHome.jsx
