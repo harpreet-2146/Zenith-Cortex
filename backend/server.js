@@ -13,7 +13,7 @@ const achievementsRoutes = require("./routes/achievements");
 const leaderboardRoutes=require("./routes/leaderboard");
 const searchRoutes = require("./routes/search");
 const opportunitiesRoutes = require("./routes/opportunities");
-const recQuizRoutes = require("./routes/rec.quiz.js");
+const recQuizRoutes = require("./routes/rec.quiz");
 const app = express();
 
 // Middleware

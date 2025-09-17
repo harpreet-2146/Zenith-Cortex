@@ -22,7 +22,7 @@ backend>
            db.js
            vertex.js
      .env
-     db.json
+     db.json 
      nodemon.json
      server.js
 
