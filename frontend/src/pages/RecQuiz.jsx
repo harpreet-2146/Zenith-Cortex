@@ -1,68 +1,106 @@
 import React, { useState } from "react";
-import quizQuestions from "../data/quiz.questions.json";
-import usersData from "../data/users.json"; // import your users.json
+import recQuestionsRaw from "../data/rec.questions.json"; // 👈 adjust if needed
 
-export default function Quiz() {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [showResults, setShowResults] = useState(false);
+export default function RecQuiz() {
+  // Ensure array
+  const recQuestions = Array.isArray(recQuestionsRaw) ? recQuestionsRaw : [];
 
-  const PAGE_SIZE = 4;
-  const questions = Array.isArray(quizQuestions) ? quizQuestions : [];
+  const [answers, setAnswers] = useState({});
+  const [results, setResults] = useState([]);
 
-  const handleFinish = () => {
-    setShowResults(true); // switch to student list
+  const handleChange = (qid, option) => {
+    setAnswers(prev => {
+      const current = prev[qid] || [];
+      if (current.includes(option)) {
+        return { ...prev, [qid]: current.filter(o => o !== option) };
+      } else {
+        return { ...prev, [qid]: [...current, option] };
+      }
+    });
   };
 
-  if (showResults) {
-    return (
-      <div>
-        <h2>🏆 Students Leaderboard</h2>
-        <ul>
-          {usersData.users.map((student) => (
-            <li key={student.id} style={{ margin: "10px 0" }}>
-              <img
-                src={student.avatar}
-                alt={student.name}
-                width={40}
-                height={40}
-                style={{ borderRadius: "50%", marginRight: "10px" }}
-              />
-              <strong>{student.name}</strong> ({student.srn}) — 
-              {student.totalPoints} points
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-
-  const start = currentPage * PAGE_SIZE;
-  const currentQuestions = questions.slice(start, start + PAGE_SIZE);
+  const handleAnalyse = async () => {
+    const selectedAnswers = Object.values(answers).flat();
+    try {
+      const res = await fetch("http://localhost:5000/api/recquiz/analyse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: selectedAnswers }),
+      });
+      const data = await res.json();
+      setResults(data.matches || []);
+    } catch (err) {
+      console.error("Error analysing:", err);
+    }
+  };
 
   return (
-    <div>
-      <h2>Quiz</h2>
-      {currentQuestions.map((q, index) => (
-        <div key={index} style={{ margin: "20px 0" }}>
-          <h4>{q.question}</h4>
-          <ul>
-            {q.options.map((option, i) => (
-              <li key={i}>
-                <button>{option}</button>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-center">Recruiter Quiz</h1>
+
+      {/* Quiz Questions */}
+      <div className="space-y-6">
+        {recQuestions.length > 0 ? (
+          recQuestions.map((q, idx) => (
+            <div key={idx} className="p-4 rounded-2xl shadow-md bg-pink-50">
+              <h2 className="text-lg font-semibold mb-3">{q.question}</h2>
+              <div className="space-y-2">
+                {Array.isArray(q.options) &&
+                  q.options.map((opt, oIdx) => (
+                    <label
+                      key={oIdx}
+                      className="flex items-center space-x-3 p-2 rounded-xl cursor-pointer bg-white hover:bg-pink-100 transition"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={answers[q.id]?.includes(opt) || false}
+                        onChange={() => handleChange(q.id, opt)}
+                        className="h-4 w-4 accent-pink-400"
+                      />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No recruiter questions found.</p>
+        )}
+      </div>
+
+      {/* Analyse Button */}
+      <button
+        onClick={handleAnalyse}
+        className="w-full py-3 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl shadow-md transition"
+      >
+        Analyse
+      </button>
+
+      {/* Results */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Matching Students:</h2>
+        {results.length > 0 ? (
+          <ul className="mt-3 space-y-3">
+            {results.map((student, idx) => (
+              <li
+                key={idx}
+                className="p-4 rounded-xl bg-green-50 shadow flex flex-col"
+              >
+                <span className="font-bold">{student.name}</span>
+                <span className="text-sm text-gray-600">
+                  {student.department} • Year {student.year}
+                </span>
               </li>
             ))}
           </ul>
-        </div>
-      ))}
-
-      {start + PAGE_SIZE < questions.length ? (
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
-      ) : (
-        <button onClick={handleFinish}>Finish</button>
-      )}
+        ) : (
+          <p className="mt-3 text-gray-500">No matches yet.</p>
+        )}
+      </div>
     </div>
   );
 }
+
 
 
 // import React, { useState } from "react";

@@ -1,28 +1,35 @@
+// backend/routes/rec.quiz.js
 const express = require("express");
 const router = express.Router();
-const { readDb } = require("../utils/db"); // adjust to your db helper
+const db = require("../utils/db"); // lowdb wrapper
 
-// POST: recruiter submits preferences, return matching students
-router.post("/analyze", async (req, res) => {
+// POST /api/recquiz/analyse
+router.post("/recquiz/analyse", async (req, res) => {
   try {
-    const answers = req.body.answers || {};
-    const db = await readDb();
+    const { answers } = req.body; // recruiter’s selected criteria (array)
 
-    // Here you can make filtering smarter. For now, return all students.
-    const students = db.students || [];
+    if (!answers || !Array.isArray(answers)) {
+      return res.status(400).json({ error: "Invalid answers format" });
+    }
 
-    res.json({
-      success: true,
-      matches: students.map((s) => ({
-        id: s.id,
-        name: s.name,
-        srn: s.srn,
-        avatar: s.avatar,
-        totalPoints: s.totalPoints,
-      })),
+    // Load students from db.json
+    await db.read();
+    const allStudents = db.data?.users?.filter(u => u.role === "student") || [];
+
+    // Match students based on recruiter’s answers
+    const matching = allStudents.filter(student => {
+      return answers.every(ans =>
+        (student.skills && student.skills.includes(ans)) ||
+        (student.department && student.department === ans) ||
+        (student.year && String(student.year) === String(ans)) ||
+        (student.class && student.class === ans)
+      );
     });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to analyze recruiter quiz" });
+
+    res.json({ matches: matching });
+  } catch (error) {
+    console.error("Error in rec.quiz:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
