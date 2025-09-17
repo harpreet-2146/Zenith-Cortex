@@ -59,7 +59,7 @@ Target Job Role: "${targetRole}"
 
 Rules:
 - Use ONLY valid JSON. No markdown, no backticks, no extra text.
-- "atsScore" must be an integer 1–5 (5 = excellent match).
+- "atsScore" must be a float 1–5 (5 = excellent match).
 - "pros"/"cons" concise but specific.
 - "improvements" must be actionable.
 - "keywordSuggestions" tailored to the target role.
