@@ -1,35 +1,28 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
-
 const router = express.Router();
-const dbPath = path.resolve("db.json");
+const { readDb } = require("../utils/db"); // adjust to your db helper
 
-// ✅ POST recruiter quiz submission
-router.post("/rec-quiz", async (req, res) => {
+// POST: recruiter submits preferences, return matching students
+router.post("/analyze", async (req, res) => {
   try {
-    const { recruiterId, answers } = req.body;
-    if (!recruiterId || !answers) {
-      return res.status(400).json({ error: "Missing recruiterId or answers" });
-    }
+    const answers = req.body.answers || {};
+    const db = await readDb();
 
-    // read db.json
-    const data = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+    // Here you can make filtering smarter. For now, return all students.
+    const students = db.students || [];
 
-    if (!data.recQuizSubmissions) data.recQuizSubmissions = [];
-    data.recQuizSubmissions.push({
-      recruiterId,
-      answers,
-      submittedAt: new Date(),
+    res.json({
+      success: true,
+      matches: students.map((s) => ({
+        id: s.id,
+        name: s.name,
+        srn: s.srn,
+        avatar: s.avatar,
+        totalPoints: s.totalPoints,
+      })),
     });
-
-    // write back to db.json
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-
-    res.json({ message: "Recruiter quiz submitted successfully" });
   } catch (err) {
-    console.error("Error saving recruiter quiz:", err);
-    res.status(500).json({ error: "Failed to submit recruiter quiz" });
+    res.status(500).json({ error: "Failed to analyze recruiter quiz" });
   }
 });
 

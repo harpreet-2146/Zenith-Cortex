@@ -17,6 +17,7 @@ backend>
            search.js
            quiz.js
            resume.js
+           rec.quiz.js
      utils>
            db.js
            vertex.js
@@ -36,6 +37,7 @@ frontend>
     data>
        achievements.js
        quiz.questions.json
+       rec.questions.json
     layouts>
        MainLayout.jsx
     pages> 
