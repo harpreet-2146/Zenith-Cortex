@@ -12,7 +12,7 @@
       "department": "CSE",
       "branch": "AIML",
       "avatar": "dog.jpg",
-      "totalPoints": 20
+      "totalPoints": 40
     },
     {
       "id": 2,
@@ -1133,6 +1133,24 @@
       "domain": "Other",
       "proof": "mentor_certificate.pdf",
       "points": 21
+    },
+    {
+      "id": 1758272663576,
+      "userId": 1,
+      "title": "codeathon ",
+      "description": "quantum navigation ",
+      "proof": "/uploads/1758272663010.pptx",
+      "points": 10,
+      "createdAt": "2025-09-19T09:04:23.576Z"
+    },
+    {
+      "id": 1758273001834,
+      "userId": 1,
+      "title": "soc analyst course ",
+      "description": " and security incidents within an organization's IT infrastructure. Courses cover fundamental concepts of information security, threat intelligence, log management using SIEM (Security Information and Event Management) tools, incident response procedures, and hands-on experience with leading cybersecurity tools like Splunk and Wireshark.",
+      "proof": "/uploads/1758273001827.png",
+      "points": 10,
+      "createdAt": "2025-09-19T09:10:01.834Z"
     }
   ],
   "opportunities": [
