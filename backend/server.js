@@ -1,78 +1,28 @@
-// require("dotenv").config();
-// const express = require("express");
-// const cors = require("cors");
-// const path = require("path");
-// const bodyParser = require("body-parser");
-
-// const resumeRoutes = require("./routes/resume");
-// const quizRoutes = require("./routes/quiz");
-// const homeRoutes = require("./routes/home");
-// const authRoutes = require("./routes/auth");
-// const achievementsRoutes = require("./routes/achievements");
-// const leaderboardRoutes = require("./routes/leaderboard");
-// const searchRoutes = require("./routes/search");
-// const opportunitiesRoutes = require("./routes/opportunities");
-// const recQuizRoutes = require("./routes/recquiz");
-//  const studentRoutes = require("./routes/students");
-
-// const app = express();
-
-// // Middleware
-// app.use(cors());
-// app.use(express.json());
-// app.use(bodyParser.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// //API Routes
-// app.use("/api/resume", resumeRoutes);
-// app.use("/api/quiz", quizRoutes);
-// app.use("/api/home", homeRoutes);
-// app.use("/api", searchRoutes);
-// app.use("/api/auth", authRoutes);
-// app.use("/api/achievements", achievementsRoutes);
-// app.use("/api/leaderboard", leaderboardRoutes);
-// app.use("/api/opportunities", opportunitiesRoutes);
-// app.use("/api", recQuizRoutes);
-// app.use("/api/students", studentRoutes);
-
-// const frontendPath = path.join(__dirname, "dist"); // container has /app/backend/dist
-// app.use(express.static(frontendPath));
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(frontendPath, "index.html"));
-// });
-
-// // Start server
-// const PORT = process.env.PORT || 8080;
-// app.listen(PORT, "0.0.0.0", () => {
-//   console.log(`✅ Running on port ${PORT}`);
-// });
-
-//backend/server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
+
+// Your route imports
 const resumeRoutes = require("./routes/resume");
 const quizRoutes = require("./routes/quiz");
 const homeRoutes = require("./routes/home");
-//const profileRoutes = require("./routes/profile"); // removed .js for consistency
 const authRoutes = require("./routes/auth");
 const achievementsRoutes = require("./routes/achievements");
-const leaderboardRoutes=require("./routes/leaderboard");
+const leaderboardRoutes = require("./routes/leaderboard");
 const searchRoutes = require("./routes/search");
 const opportunitiesRoutes = require("./routes/opportunities");
 const recQuizRoutes = require("./routes/recquiz");
 const studentRoutes = require("./routes/students");
+
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // for JSON requests
+app.use(express.json());
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true })); // ✅ handles form submissions
+app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 
 // Routes
@@ -80,12 +30,62 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api", searchRoutes);
-//app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/achievements", achievementsRoutes);
-app.use("/api/leaderboard",leaderboardRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/opportunities", opportunitiesRoutes);
 app.use("/api", recQuizRoutes);
 app.use("/api/students", studentRoutes);
-const PORT = 5000;
+
+// Serve frontend build for all other routes
+const frontendPath = path.join(__dirname, "dist");
+app.use(express.static(frontendPath));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// Use PORT from environment (Cloud Run) or fallback to 5000 locally
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+
+
+// //backend/server.js
+// require("dotenv").config();
+// const express = require("express");
+// const cors = require("cors");
+// const path = require("path");
+// const bodyParser = require("body-parser");
+// const resumeRoutes = require("./routes/resume");
+// const quizRoutes = require("./routes/quiz");
+// const homeRoutes = require("./routes/home");
+// //const profileRoutes = require("./routes/profile"); // removed .js for consistency
+// const authRoutes = require("./routes/auth");
+// const achievementsRoutes = require("./routes/achievements");
+// const leaderboardRoutes=require("./routes/leaderboard");
+// const searchRoutes = require("./routes/search");
+// const opportunitiesRoutes = require("./routes/opportunities");
+// const recQuizRoutes = require("./routes/recquiz");
+// const studentRoutes = require("./routes/students");
+// const app = express();
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json()); // for JSON requests
+// app.use(bodyParser.json());
+// app.use(express.urlencoded({ extended: true })); // ✅ handles form submissions
+// app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
+
+// // Routes
+// app.use("/api/resume", resumeRoutes);
+// app.use("/api/quiz", quizRoutes);
+// app.use("/api/home", homeRoutes);
+// app.use("/api", searchRoutes);
+// //app.use("/api/profile", profileRoutes);
+// app.use("/api/auth", authRoutes);
+// app.use("/api/achievements", achievementsRoutes);
+// app.use("/api/leaderboard",leaderboardRoutes);
+// app.use("/api/opportunities", opportunitiesRoutes);
+// app.use("/api", recQuizRoutes);
+// app.use("/api/students", studentRoutes);
+// const PORT = 5000;
+// app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
