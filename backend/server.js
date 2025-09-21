@@ -4,7 +4,6 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 
-// Your route imports
 const resumeRoutes = require("./routes/resume");
 const quizRoutes = require("./routes/quiz");
 const homeRoutes = require("./routes/home");
@@ -18,14 +17,12 @@ const studentRoutes = require("./routes/students");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 
-// Routes
 app.use("/api/resume", resumeRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/home", homeRoutes);
@@ -37,12 +34,16 @@ app.use("/api/opportunities", opportunitiesRoutes);
 app.use("/api", recQuizRoutes);
 app.use("/api/students", studentRoutes);
 
-// Serve frontend build for all other routes
+// ✅ Serve frontend build from /dist (must exist in the container)
 const frontendPath = path.join(__dirname, "dist");
 app.use(express.static(frontendPath));
 app.get("*", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
+
+// ✅ Use Cloud Run PORT
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // Use PORT from environment (Cloud Run) or fallback to 5000 locally
 const PORT = process.env.PORT || 5000;
