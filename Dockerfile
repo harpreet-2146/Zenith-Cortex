@@ -1,22 +1,29 @@
-# Stage 1: Build frontend
-FROM node:20 AS frontend-build
+# 1️⃣ Build frontend
+FROM node:20 AS build
 WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm install
-COPY frontend/ ./
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
+COPY frontend ./frontend
+WORKDIR /app/frontend
 RUN npm run build
 
-# Stage 2: Backend
+# 2️⃣ Setup backend
 FROM node:20
-WORKDIR /app
+WORKDIR /app/backend
+
+# Install backend dependencies
 COPY backend/package*.json ./
 RUN npm install
-COPY backend/ ./
 
-# Copy frontend build output into backend folder
-COPY --from=frontend-build /app/dist ./dist
+# Copy backend code
+COPY backend ./ 
 
+# Copy frontend build into backend
+COPY --from=build /app/frontend/dist ./dist
+
+# Expose Cloud Run port
 EXPOSE 8080
 ENV PORT=8080
 
+# Start server
 CMD ["node", "server.js"]
