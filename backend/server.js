@@ -36,13 +36,14 @@ app.use("/api/opportunities", opportunitiesRoutes);
 app.use("/api", recQuizRoutes);
 app.use("/api/students", studentRoutes);
 
-const frontendPath = path.join(__dirname, "../frontend/dist"); // or ../frontend/build
+const frontendPath = path.join(__dirname, "dist"); // container has /app/backend/dist
 app.use(express.static(frontendPath));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
+// Start server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Running on port ${PORT}`);

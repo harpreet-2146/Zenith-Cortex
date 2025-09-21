@@ -9,15 +9,17 @@ RUN npm run build
 
 # Backend
 FROM node:20
-WORKDIR /app
-# Copy backend package files first and install dependencies
-COPY backend/package*.json ./backend/
 WORKDIR /app/backend
+
+# Copy backend package files first and install dependencies
+COPY backend/package*.json ./
 RUN npm install
+
 # Copy the rest of the backend code
-COPY backend ./backend
-# Copy frontend build from previous stage
-COPY --from=build /app/frontend/dist ../frontend/dist
+COPY backend ./
+
+# Copy frontend build output into backend/dist
+COPY --from=build /app/frontend/dist ./dist
 
 # Expose the port for Cloud Run
 EXPOSE 8080
