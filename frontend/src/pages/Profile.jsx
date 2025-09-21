@@ -19,7 +19,7 @@ export default function Profile() {
     const fetchAchievements = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/achievements/${user.id}`
+          `/api/achievements/${user.id}`
         );
         setAchievements(res.data);
         const points = res.data.reduce((sum, a) => sum + (a.points || 0), 0);
@@ -49,7 +49,7 @@ export default function Profile() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/achievements/add",
+        "/api/achievements/add",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -210,7 +210,7 @@ export default function Profile() {
                     </a>
                   ) : (
                     <img
-                      src={`http://localhost:5000${a.proof}`}
+                      src={`${a.proof}`}
                       alt="Proof"
                       className="w-32 h-32 object-cover rounded"
                     />

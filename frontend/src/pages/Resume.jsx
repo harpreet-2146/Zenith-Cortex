@@ -27,7 +27,7 @@ export default function Resume() {
     formData.append("targetRole", targetRole);
 
     try {
-      const res = await fetch("http://localhost:5000/api/resume/analyse-file", {
+      const res = await fetch("/api/resume/analyse-file", {
         method: "POST",
         body: formData,
       });

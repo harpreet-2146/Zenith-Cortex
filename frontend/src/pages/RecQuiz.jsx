@@ -36,7 +36,7 @@ export default function RecQuiz() {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/recquiz/analyse", {
+      const res = await fetch("/api/recquiz/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: selectedAnswers }),

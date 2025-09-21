@@ -43,7 +43,7 @@ export default function Quiz() {
     setAiResult(null);
     try {
       const filtered = answers.filter((a) => a !== null); // send selected only
-      const res = await fetch("http://localhost:5000/api/quiz/analyze", {
+      const res = await fetch("/api/quiz/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: filtered }),
