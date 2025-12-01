@@ -2,6 +2,9 @@
 
 Zenith Cortex is an AI-powered student assistant platform that helps students explore opportunities, improve their resumes, and enhance learning through quizzes and interactive tools.
 
+## LIVE AT
+https://zenith-cortex-438434869792.us-central1.run.app/
+
 ## 🚀 Features
 
 ### 🔹 Student POV Dashboard
