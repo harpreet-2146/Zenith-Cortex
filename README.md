@@ -182,7 +182,7 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
+## 📸 Architecture thinking
 
 <details>
 <summary>Click to expand</summary>
